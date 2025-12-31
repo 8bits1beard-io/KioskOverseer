@@ -2,7 +2,7 @@
 
 A guided builder for Windows kiosk configurations—no XML expertise required.
 
-**Hosted app:** https://aaxb.pages.dev
+**Hosted app:** https://mksa.pages.dev
 
 ## Executive Summary
 
