@@ -256,7 +256,6 @@ function updateAppTypeUI() {
 const actionHandlers = {
     loadPreset,
     loadConfig,
-    saveConfig,
     saveConfigAs,
     importXml,
     showDeployHelp,
@@ -2762,27 +2761,6 @@ async function writeConfigToHandle(handle, config) {
     const writable = await handle.createWritable();
     await writable.write(JSON.stringify(config, null, 2));
     await writable.close();
-}
-
-async function saveConfig() {
-    const config = buildConfigSnapshot();
-    if ('showSaveFilePicker' in window) {
-        if (configFileHandle) {
-            try {
-                await writeConfigToHandle(configFileHandle, config);
-                alert('Configuration saved.');
-                return;
-            } catch (e) {
-                console.error('Failed to save configuration:', e);
-                alert('Could not save configuration.');
-                return;
-            }
-        }
-        await saveConfigAs(config);
-        return;
-    }
-
-    downloadFile(JSON.stringify(config, null, 2), getConfigSaveName(), 'application/json');
 }
 
 async function saveConfigAs(existingConfig) {
