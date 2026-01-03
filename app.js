@@ -1806,12 +1806,10 @@ function updateExportDetectedGuidance() {
     if (hasDesktopAppLinks()) {
         lines.push('.lnk shortcuts detected — run Shortcut Creator if these shortcuts don’t already exist on the target device.');
     } else {
-        lines.push('No .lnk shortcuts detected — Shortcut Creator is not required.');
     }
     if (hasEdgeBackedDesktopLinks()) {
         lines.push('Edge-backed shortcuts detected — Edge Manifest Workaround (Advanced) may help Windows honor .lnk icon/name metadata in Assigned Access.');
     }
-    lines.push('If deploying via Intune OMA-URI, you typically do not need the Apply Assigned Access script.');
     container.innerHTML = lines.map(line => `<div>${escapeXml(line)}</div>`).join('');
 }
 
