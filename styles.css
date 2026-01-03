@@ -347,6 +347,10 @@ main {
     color: var(--text-secondary);
 }
 
+.export-guidance:empty {
+    display: none;
+}
+
 .export-guidance strong {
     color: var(--text-primary);
 }
