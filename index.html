@@ -64,7 +64,7 @@
             <div class="side-nav-tabs" role="tablist" aria-label="Configuration sections">
                 <div class="side-nav-title">Configuration</div>
                 <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup">Kiosk Setup</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application">Allowed Applicationbs</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application">Allowed Applications</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu">Pinned Items</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-system" id="tab-btn-system" data-action="switchTab" data-arg="system">System</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary">Summary</button>
@@ -897,46 +897,6 @@
                             </div>
                         </div>
                     </fieldset>
-                    </div>
-                    <!-- End Start Menu Tab -->
-
-                    <!-- System Tab (Multi-App only) -->
-                    <div class="tab-content" role="tabpanel" id="tab-system" aria-labelledby="tab-btn-system">
-                    <p class="section-hint">Step 4: Choose taskbar visibility and File Explorer restrictions.</p>
-                    <fieldset class="section">
-                        <legend class="section-header">Taskbar &amp; File Explorer</legend>
-                        <div class="section-content">
-                            <div class="form-group">
-                                <div class="checkbox-group">
-                                    <span class="toggle-switch">
-                                        <input type="checkbox" id="showTaskbar" checked data-change="updatePreview" aria-describedby="showTaskbar-tooltip">
-                                        <span class="toggle-slider" aria-hidden="true"></span>
-                                    </span>
-                                    <label for="showTaskbar" class="with-tooltip">
-                                        Show Taskbar
-                                        <button type="button" class="tooltip-icon" aria-label="Help for Show Taskbar" aria-describedby="showTaskbar-tooltip">?</button>
-                                        <span class="tooltip-content" id="showTaskbar-tooltip" role="tooltip">When enabled, users see the Windows taskbar with Start button and running apps. Disable for a more locked-down experience where users can only access apps via the Start menu.</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fileExplorerAccess" class="with-tooltip">
-                                    File Explorer Access
-                                    <button type="button" class="tooltip-icon" aria-label="Help for File Explorer Access" aria-describedby="fileExplorerAccess-tooltip">?</button>
-                                    <span class="tooltip-content" id="fileExplorerAccess-tooltip" role="tooltip">No Access: File Explorer is blocked. Downloads Only: Access to Downloads folder. Removable Drives: Access to USB drives. Downloads + Removable: Both options. No Restriction: Full file system access.</span>
-                                </label>
-                                <select id="fileExplorerAccess" data-change="updatePreview" aria-describedby="fileExplorerAccess-tooltip">
-                                    <option value="none">No Access (Blocked)</option>
-                                    <option value="downloads">Downloads Folder Only</option>
-                                    <option value="removable">Removable Drives Only</option>
-                                    <option value="downloads-removable">Downloads + Removable Drives</option>
-                                    <option value="all">No Restriction (All Locations)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </fieldset>
-
                     <fieldset class="section">
                         <legend class="section-header">Taskbar Layout (Optional)</legend>
                         <div class="section-content">
@@ -1134,6 +1094,46 @@
                             </div>
                         </div>
                     </fieldset>
+                    </div>
+                    <!-- End Start Menu Tab -->
+
+                    <!-- System Tab (Multi-App only) -->
+                    <div class="tab-content" role="tabpanel" id="tab-system" aria-labelledby="tab-btn-system">
+                    <p class="section-hint">Step 4: Choose taskbar visibility and File Explorer restrictions.</p>
+                    <fieldset class="section">
+                        <legend class="section-header">Taskbar &amp; File Explorer</legend>
+                        <div class="section-content">
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <span class="toggle-switch">
+                                        <input type="checkbox" id="showTaskbar" checked data-change="updatePreview" aria-describedby="showTaskbar-tooltip">
+                                        <span class="toggle-slider" aria-hidden="true"></span>
+                                    </span>
+                                    <label for="showTaskbar" class="with-tooltip">
+                                        Show Taskbar
+                                        <button type="button" class="tooltip-icon" aria-label="Help for Show Taskbar" aria-describedby="showTaskbar-tooltip">?</button>
+                                        <span class="tooltip-content" id="showTaskbar-tooltip" role="tooltip">When enabled, users see the Windows taskbar with Start button and running apps. Disable for a more locked-down experience where users can only access apps via the Start menu.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fileExplorerAccess" class="with-tooltip">
+                                    File Explorer Access
+                                    <button type="button" class="tooltip-icon" aria-label="Help for File Explorer Access" aria-describedby="fileExplorerAccess-tooltip">?</button>
+                                    <span class="tooltip-content" id="fileExplorerAccess-tooltip" role="tooltip">No Access: File Explorer is blocked. Downloads Only: Access to Downloads folder. Removable Drives: Access to USB drives. Downloads + Removable: Both options. No Restriction: Full file system access.</span>
+                                </label>
+                                <select id="fileExplorerAccess" data-change="updatePreview" aria-describedby="fileExplorerAccess-tooltip">
+                                    <option value="none">No Access (Blocked)</option>
+                                    <option value="downloads">Downloads Folder Only</option>
+                                    <option value="removable">Removable Drives Only</option>
+                                    <option value="downloads-removable">Downloads + Removable Drives</option>
+                                    <option value="all">No Restriction (All Locations)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
                     </div>
                     <!-- End System Tab -->
 
