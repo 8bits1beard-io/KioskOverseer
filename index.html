@@ -16,13 +16,8 @@
 
     <header role="banner">
         <div class="header-top">
-            <h1>
-                <span class="header-text">
-                    <span class="header-title">Kiosk Overseer</span>
-                    <span class="header-tagline">Windows Kiosk Builder</span>
-                </span>
-            </h1>
-            <nav class="header-actions" aria-label="Main actions">
+            <h1 class="header-system-label">KIOSK OVERSEER // BUILD 1.0.1</h1>
+            <nav class="header-actions command-strip" aria-label="Main actions">
                 <button type="button" class="btn-secondary" data-action="loadPreset" data-arg="blank">New</button>
                 <button type="button" class="btn-secondary" data-action="loadConfig">Load Config</button>
                 <button type="button" class="btn-secondary" data-action="saveConfigAs">Save</button>
@@ -40,7 +35,7 @@
     <main id="main-content" class="container layout">
         <aside class="side-nav" role="navigation" aria-label="Configuration">
             <div class="side-nav-tabs" role="tablist" aria-label="Configuration sections">
-                <div class="side-nav-title">Configuration</div>
+                <div class="side-nav-title">SECTION 00: NAVIGATION</div>
                 <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup">Kiosk Setup</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application">Allowed Applications</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu">Pinned Items</button>
@@ -54,7 +49,6 @@
                     <div class="side-nav-logo-inspiration">
                         Inspired by the work of <a href="https://www.linkedin.com/in/brandon-villines/" target="_blank" rel="noopener noreferrer">Brandon Villines</a>
                     </div>
-                    <div class="side-nav-logo-version">Version: <span id="appVersion">1.0.1</span></div>
                 </div>
             </div>
             <div class="export-actions side-nav-export" role="group" aria-label="Export options">
@@ -69,7 +63,7 @@
             <h2 id="config-heading" class="panel-header">
                 SECTION 00: CONFIGURATION
             </h2>
-            <div class="panel-content with-tabs crt-pane">
+            <div class="panel-content with-tabs">
                 <div class="progress-rail" role="list" aria-label="Setup progress">
                     <div class="progress-step" data-step="setup" role="listitem">
                         <div class="progress-label">1. Setup</div>
@@ -92,6 +86,27 @@
                         <div class="progress-status">Validate &amp; export</div>
                     </div>
                 </div>
+                <div class="status-panel" role="status" aria-live="polite" aria-atomic="true">
+                    <div class="status-panel-title">SECTION 00: STATUS</div>
+                    <div class="status-panel-grid">
+                        <div class="status-panel-item">
+                            <span class="status-panel-label">STATE</span>
+                            <span class="status-panel-value" id="statusState">INCOMPLETE</span>
+                        </div>
+                        <div class="status-panel-item">
+                            <span class="status-panel-label">MODE</span>
+                            <span class="status-panel-value" id="statusMode">SINGLE-APP</span>
+                        </div>
+                        <div class="status-panel-item">
+                            <span class="status-panel-label">ALLOWED APPS</span>
+                            <span class="status-panel-value" id="statusAllowedApps">0</span>
+                        </div>
+                        <div class="status-panel-item">
+                            <span class="status-panel-label">PINS</span>
+                            <span class="status-panel-value" id="statusPins">0</span>
+                        </div>
+                    </div>
+                </div>
                 <!-- Tab Panels -->
                 <div class="tab-panels">
                     <!-- Setup Tab -->
@@ -112,11 +127,11 @@
                                     <span class="example-detail">Group-based access</span>
                                 </button>
                             </div>
-                            <div class="inline-note">These presets are starting points. Update names, URLs, and account details before exporting.</div>
+                            <div class="inline-note">NOTE: These presets are starting points. Update names, URLs, and account details before exporting.</div>
                         </div>
                         <div class="callout" data-callout-id="mode">
                             <div class="callout-title">Start here</div>
-                            <div class="callout-body">Pick your kiosk mode first. It controls which tabs and options show up.</div>
+                            <div class="callout-body">NOTE: Pick your kiosk mode first. It controls which tabs and options show up.</div>
                             <button type="button" class="callout-close" data-action="dismissCallout" data-arg="mode" aria-label="Dismiss">×</button>
                         </div>
                         <p class="section-hint">Step 1: Choose kiosk mode, set profile details, then pick the account type.</p>
@@ -158,7 +173,7 @@
                                 <input type="text" id="profileId" placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}" data-change="updatePreview" aria-describedby="profileId-tooltip">
                                 <button type="button" class="btn-secondary" data-action="generateGuid">Generate</button>
                                 <button type="button" class="btn-secondary btn-small" data-action="copyProfileId" aria-label="Copy Profile GUID to clipboard">
-                                    <span aria-hidden="true">CPY</span>
+                                    <span aria-hidden="true">COPY GUID</span>
                                 </button>
                             </div>
                         </div>
@@ -246,6 +261,8 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 04: SINGLE-APP SETTINGS</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">PRESETS</div>
                             <div class="form-group">
                                 <label class="with-tooltip">
                                     Single-App Presets
@@ -258,7 +275,10 @@
                                     <button type="button" class="btn-secondary btn-small" data-action="applySingleAppPreset" data-arg="firefox">Firefox Kiosk</button>
                                 </div>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">APPLICATION TYPE</div>
                             <div class="form-group">
                                 <label for="appType" class="with-tooltip">
                                     Application Type
@@ -271,9 +291,11 @@
                                     <option value="win32">Win32 Desktop App</option>
                                 </select>
                             </div>
+                            </div>
 
                             <!-- Edge Configuration -->
-                            <div id="edgeConfig" role="group" aria-label="Microsoft Edge settings">
+                            <div id="edgeConfig" class="sub-panel" role="group" aria-label="Microsoft Edge settings">
+                                <div class="sub-panel-title">EDGE KIOSK</div>
                                 <div class="form-group">
                                     <label for="edgeSourceType" class="with-tooltip">
                                         Load From
@@ -303,7 +325,7 @@
                                     </label>
                                     <input type="text" id="edgeFilePath" placeholder="C:/Kiosk/index.html" data-change="updatePreview" aria-describedby="edgeFilePath-tooltip">
                                     <p class="hint" style="margin-top: 6px;">
-                                        <strong>Tip:</strong> Use forward slashes (/) in the path. Spaces are converted automatically.<br>
+                                        <strong>TIP:</strong> Use forward slashes (/) in the path. Spaces are converted automatically.<br>
                                         Example: <code>C:/Program Files/Kiosk/page.html</code> → <code>file:///C:/Program%20Files/Kiosk/page.html</code>
                                     </p>
                                 </div>
@@ -331,7 +353,8 @@
                             </div>
 
                             <!-- UWP App Configuration -->
-                            <div id="uwpConfig" class="hidden" aria-hidden="true" role="group" aria-label="UWP App settings">
+                            <div id="uwpConfig" class="hidden sub-panel" aria-hidden="true" role="group" aria-label="UWP App settings">
+                                <div class="sub-panel-title">UWP APP</div>
                                 <div class="form-group">
                                     <label for="uwpAumid" class="with-tooltip">
                                         App User Model ID (AUMID)
@@ -343,7 +366,8 @@
                             </div>
 
                             <!-- Win32 App Configuration -->
-                            <div id="win32Config" class="hidden" aria-hidden="true" role="group" aria-label="Win32 App settings">
+                            <div id="win32Config" class="hidden sub-panel" aria-hidden="true" role="group" aria-label="Win32 App settings">
+                                <div class="sub-panel-title">WIN32 APP</div>
                                 <div class="form-group">
                                     <label for="win32Path" class="with-tooltip">
                                         Application Path
@@ -363,19 +387,21 @@
                             </div>
 
                             <!-- Breakout Sequence -->
-                            <div class="form-group" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
-                                <div class="checkbox-group">
-                                    <span class="toggle-switch">
-                                        <input type="checkbox" id="enableBreakout" data-change="updateBreakoutUI|updatePreview" aria-describedby="enableBreakout-tooltip">
-                                        <span class="toggle-slider" aria-hidden="true"></span>
-                                    </span>
-                                    <label for="enableBreakout" class="with-tooltip">
-                                        Enable Breakout Sequence
-                                        <button type="button" class="tooltip-icon" aria-label="Help for Breakout Sequence" aria-describedby="enableBreakout-tooltip">?</button>
-                                        <span class="tooltip-content" id="enableBreakout-tooltip" role="tooltip">Allows technicians to exit kiosk mode using a key combination. Useful for troubleshooting without rebooting. The user will be taken to the Windows lock screen.</span>
-                                    </label>
+                            <div class="sub-panel">
+                                <div class="sub-panel-title">BREAKOUT CONTROL</div>
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <span class="toggle-switch">
+                                            <input type="checkbox" id="enableBreakout" data-change="updateBreakoutUI|updatePreview" aria-describedby="enableBreakout-tooltip">
+                                            <span class="toggle-slider" aria-hidden="true"></span>
+                                        </span>
+                                        <label for="enableBreakout" class="with-tooltip">
+                                            Enable Breakout Sequence
+                                            <button type="button" class="tooltip-icon" aria-label="Help for Breakout Sequence" aria-describedby="enableBreakout-tooltip">?</button>
+                                            <span class="tooltip-content" id="enableBreakout-tooltip" role="tooltip">Allows technicians to exit kiosk mode using a key combination. Useful for troubleshooting without rebooting. The user will be taken to the Windows lock screen.</span>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
                             <div id="breakoutConfig" class="hidden" aria-hidden="true">
                                 <div class="form-group">
                                     <label id="breakoutKey-label" class="with-tooltip">
@@ -451,6 +477,7 @@
                                     </p>
                                 </div>
                             </div>
+                            </div>
                         </div>
                     </fieldset>
                 </div>
@@ -460,6 +487,8 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 05: ALLOWED APPLICATIONS</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">ADD APPLICATION</div>
                             <div class="form-group">
                                 <label id="addApp-label" class="with-tooltip">
                                     Add Application
@@ -478,10 +507,13 @@
                                 </div>
                             </div>
                             <div class="callout callout-compact" data-callout-id="apps">
-                                <div class="callout-body">Add at least one allowed app. Use the quick buttons for common defaults.</div>
+                                <div class="callout-body">TIP: Add at least one allowed app. Use the quick buttons for common defaults.</div>
                                 <button type="button" class="callout-close" data-action="dismissCallout" data-arg="apps" aria-label="Dismiss">×</button>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">COMMON APPS</div>
                             <div class="form-group">
                                 <label id="commonApps-label" class="with-tooltip">
                                     Common Apps
@@ -489,7 +521,7 @@
                                     <span class="tooltip-content" id="commonApps-tooltip" role="tooltip">Quick-add frequently needed apps. Edge includes all required components (msedge.exe, proxy, AUMID). On-Screen Keyboard is useful for touchscreen kiosks.</span>
                                 </label>
                                 <p class="hint" style="margin-bottom: 8px;">
-                                    <strong>Note:</strong> Common apps use default installation paths. If an app is installed in a custom location, use "Add Application" above instead.
+                                    <strong>NOTE:</strong> Common apps use default installation paths. If an app is installed in a custom location, use "Add Application" above instead.
                                 </p>
                                 <div role="group" aria-labelledby="commonApps-label">
                                     <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px;">
@@ -538,12 +570,16 @@
                                     </div>
                                 </div>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">ALLOWED APPS LIST</div>
                             <div class="form-group">
                                 <label id="appList-label">Allowed Apps (<span id="appCount" aria-live="polite">0</span>)</label>
                                 <div class="app-list" id="appList" role="list" aria-labelledby="appList-label" aria-live="polite">
                                     <div class="empty-list" role="listitem">No apps added yet</div>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </fieldset>
@@ -551,6 +587,8 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 06: AUTO-LAUNCH CONFIGURATION</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">AUTO-LAUNCH</div>
                             <div class="form-group">
                                 <label for="autoLaunchApp" class="with-tooltip">
                                     Launch on Startup
@@ -561,12 +599,15 @@
                                     <option value="">None (show Start menu)</option>
                                 </select>
                             </div>
+                            </div>
                         </div>
                     </fieldset>
 
                     <fieldset class="section hidden" id="multiAppEdgeConfig" aria-hidden="true">
                         <legend class="section-header">SECTION 07: EDGE KIOSK SETTINGS</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">EDGE AUTO-LAUNCH</div>
                             <div class="form-group">
                                 <label for="multiEdgeSourceType" class="with-tooltip">
                                     URL Source
@@ -608,6 +649,7 @@
                                     <option value="public-browsing">Public Browsing (with navigation)</option>
                                 </select>
                             </div>
+                            </div>
                         </div>
                     </fieldset>
 
@@ -634,11 +676,13 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 09: START MENU PINS</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">PINNED SHORTCUTS</div>
                             <div class="callout callout-compact" data-callout-id="pins">
-                                <div class="callout-body">Pins shape the on-device experience. Add a few so users can navigate quickly.</div>
+                                <div class="callout-body">TIP: Pins shape the on-device experience. Add a few so users can navigate quickly.</div>
                                 <button type="button" class="callout-close" data-action="dismissCallout" data-arg="pins" aria-label="Dismiss">×</button>
                             </div>
-                            <div class="why-note">Why this matters: Start pins are shortcuts. If a .lnk does not exist on the device, run the Shortcut Creator after export.</div>
+                            <div class="why-note">NOTE: Start pins are shortcuts. If a .lnk does not exist on the device, run the Shortcut Creator after export.</div>
                             <div class="form-group">
                                 <label class="with-tooltip">
                                     Add Start Menu Shortcut
@@ -718,12 +762,15 @@
                                         </div>
                                     </div>
                                     <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        Note: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
+                                        NOTE: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
                                     </div>
                                     <button type="button" class="btn-primary" data-action="addPin" style="align-self: flex-start;">Add Shortcut</button>
                                 </div>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">EDGE SITE TILE</div>
                             <div class="form-group">
                                 <label class="with-tooltip">
                                     Edge Site Tile (Secondary Tile)
@@ -760,20 +807,25 @@
                                         </div>
                                     </div>
                                     <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        Note: Secondary tiles use the normal Edge profile (not InPrivate by default). Apply Edge policies if you need private-session behavior.
+                                        NOTE: Secondary tiles use the normal Edge profile (not InPrivate by default). Apply Edge policies if you need private-session behavior.
                                     </div>
                                     <button type="button" class="btn-primary" data-action="addEdgeSecondaryTile" style="align-self: flex-start;">Add Edge Site Tile</button>
                                 </div>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">PIN LIST</div>
                             <div class="form-group">
                                 <label id="pinList-label">Pinned Shortcuts (<span id="pinCount" aria-live="polite">0</span>)</label>
                                 <div class="app-list" id="pinList" role="list" aria-labelledby="pinList-label" aria-live="polite">
                                     <div class="empty-list" role="listitem">No pins added yet</div>
                                 </div>
                             </div>
+                            </div>
 
-                            <div id="pinEditPanel" class="form-group hidden" aria-live="polite">
+                            <div id="pinEditPanel" class="sub-panel hidden" aria-live="polite">
+                                <div class="sub-panel-title">EDIT PIN</div>
                                 <label>Edit Pin <span id="editPinType" style="font-weight: 400; color: var(--text-secondary);"></span></label>
                                 <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
                                     <div>
@@ -874,13 +926,15 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 10: TASKBAR LAYOUT (OPTIONAL)</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">TASKBAR PINS</div>
                             <div class="form-group">
                                 <label class="with-tooltip">
                                     Add Taskbar Pin
                                     <button type="button" class="tooltip-icon" aria-label="Help for Taskbar Pins" aria-describedby="taskbarPins-tooltip">?</button>
                                     <span class="tooltip-content" id="taskbarPins-tooltip" role="tooltip">Taskbar pins support packaged app IDs (AUMID) or desktop app target paths. The tool creates the shortcut; icon paths are only used for shortcuts you create.</span>
                                 </label>
-                                <div class="why-note">Why this matters: Taskbar pins support packaged app IDs or .lnk shortcuts only.</div>
+                                <div class="why-note">NOTE: Taskbar pins support packaged app IDs or .lnk shortcuts only.</div>
                                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
                                     <div style="display: flex; gap: 8px;">
                                         <div style="flex: 1;">
@@ -964,20 +1018,25 @@
                                         </div>
                                     </div>
                                     <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        Note: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
+                                        NOTE: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
                                     </div>
                                     <button type="button" class="btn-primary" data-action="addTaskbarPin" style="align-self: flex-start;">Add Taskbar Pin</button>
                                 </div>
                             </div>
+                            </div>
 
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">TASKBAR LIST</div>
                             <div class="form-group">
                                 <label id="taskbarPinList-label">Taskbar Pins (<span id="taskbarPinCount" aria-live="polite">0</span>)</label>
                                 <div class="app-list" id="taskbarPinList" role="list" aria-labelledby="taskbarPinList-label" aria-live="polite">
                                     <div class="empty-list" role="listitem">No taskbar pins configured</div>
                                 </div>
                             </div>
+                            </div>
 
-                            <div id="taskbarEditPanel" class="form-group hidden" aria-live="polite">
+                            <div id="taskbarEditPanel" class="sub-panel hidden" aria-live="polite">
+                                <div class="sub-panel-title">EDIT TASKBAR PIN</div>
                                 <label>Edit Taskbar Pin</label>
                                 <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
                                     <div style="display: flex; gap: 8px;">
@@ -1077,6 +1136,8 @@
                     <fieldset class="section">
                         <legend class="section-header">SECTION 11: TASKBAR &amp; FILE EXPLORER</legend>
                         <div class="section-content">
+                            <div class="sub-panel">
+                            <div class="sub-panel-title">SYSTEM CONTROLS</div>
                             <div class="form-group">
                                 <div class="checkbox-group">
                                     <span class="toggle-switch">
@@ -1105,6 +1166,7 @@
                                     <option value="all">No Restriction (All Locations)</option>
                                 </select>
                             </div>
+                            </div>
                         </div>
                     </fieldset>
 
@@ -1116,15 +1178,18 @@
                     <fieldset class="section">
                             <legend class="section-header">SECTION 12: CONFIGURATION SUMMARY</legend>
                             <div class="section-content">
+                                <div class="sub-panel">
+                                <div class="sub-panel-title">EXPORT STATUS</div>
                                 <div id="summaryNextAction" class="next-action" role="status" aria-live="polite"></div>
                                 <div class="callout callout-compact" data-callout-id="export">
-                                    <div class="callout-body">Once the summary looks right, download the XML or helper scripts from the header.</div>
+                                    <div class="callout-body">NOTE: Once the summary looks right, download the XML or helper scripts from the header.</div>
                                     <button type="button" class="callout-close" data-action="dismissCallout" data-arg="export" aria-label="Dismiss">×</button>
                                 </div>
                                 <div class="status info">
-                                    <strong>Deployment tip:</strong> The XML output is used as the String value for the AssignedAccess OMA-URI in Intune. The PowerShell script applies the configuration on-demand to a local device.
+                                    <strong>TIP:</strong> The XML output is used as the String value for the AssignedAccess OMA-URI in Intune. The PowerShell script applies the configuration on-demand to a local device.
                                 </div>
-                                <div class="summary-grid crt-pane" id="summaryGrid" aria-live="polite"></div>
+                                <div class="summary-grid" id="summaryGrid" aria-live="polite"></div>
+                                </div>
                             </div>
                         </fieldset>
                     </div>
@@ -1162,7 +1227,7 @@
         <div class="modal-backdrop" data-action="hideDeployHelp"></div>
         <div class="modal-content modal-wide">
             <div class="modal-header">
-                <h2 id="deployModalTitle">Deployment Guide</h2>
+                <h2 id="deployModalTitle">SECTION 90: DEPLOYMENT GUIDE</h2>
                 <button type="button" class="modal-close" data-action="hideDeployHelp" aria-label="Close dialog">&times;</button>
             </div>
             <div class="modal-body">
@@ -1229,20 +1294,20 @@
                         <div class="deploy-step">
                             <h4>Option A: Using Our Deploy Script</h4>
                             <p>Download the script using the <strong>Download Deploy Script</strong> button, then run:</p>
-                            <pre class="deploy-code">psexec -i -s powershell.exe -ExecutionPolicy Bypass -File "C:\path\to\Apply-AssignedAccess.ps1"</pre>
+                            <pre class="deploy-code crt-pane">psexec -i -s powershell.exe -ExecutionPolicy Bypass -File "C:\path\to\Apply-AssignedAccess.ps1"</pre>
                         </div>
 
                         <div class="deploy-step">
                             <h4>Option B: Manual Commands</h4>
                             <p>Run in SYSTEM context (via <code>psexec -i -s powershell.exe</code>):</p>
-                            <pre class="deploy-code">$xml = Get-Content -Path "C:\path\to\config.xml" -Raw
+                            <pre class="deploy-code crt-pane">$xml = Get-Content -Path "C:\path\to\config.xml" -Raw
 $bridge = Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_AssignedAccess"
 Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
                         </div>
                     </div>
 
                     <div class="deploy-note">
-                        <strong>Note:</strong> PsExec can be downloaded from <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psexec" target="_blank" rel="noopener noreferrer">Microsoft Sysinternals</a>.
+                        <strong>NOTE:</strong> PsExec can be downloaded from <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psexec" target="_blank" rel="noopener noreferrer">Microsoft Sysinternals</a>.
                     </div>
                 </div>
 
@@ -1278,7 +1343,7 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
                     </div>
 
                     <div class="deploy-note">
-                        <strong>Tip:</strong> Provisioning packages can be applied during OOBE by placing them on a USB drive.
+                        <strong>TIP:</strong> Provisioning packages can be applied during OOBE by placing them on a USB drive.
                     </div>
                 </div>
 

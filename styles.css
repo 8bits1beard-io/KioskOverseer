@@ -121,7 +121,6 @@ body {
     color: var(--text-primary);
     line-height: 1.55;
     min-height: 100vh;
-    text-shadow: 0 0 6px rgba(99, 255, 154, 0.18);
     position: relative;
 }
 
@@ -150,33 +149,6 @@ a:hover {
     text-shadow: 0 0 6px rgba(138, 255, 193, 0.35);
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        180deg,
-        rgba(99, 255, 154, 0.06) 0px,
-        rgba(99, 255, 154, 0.06) 1px,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0) 4px
-    );
-    mix-blend-mode: screen;
-    opacity: 0.35;
-    z-index: 0;
-    animation: scanlines 10s linear infinite;
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 0%, rgba(2, 8, 5, 0.6) 65%, rgba(2, 8, 5, 0.85) 100%);
-    opacity: 0.7;
-    z-index: 0;
-}
 
 header,
 main {
@@ -184,16 +156,6 @@ main {
     z-index: 1;
 }
 
-@keyframes scanlines {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 60px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    body::before {
-        animation: none;
-    }
-}
 
 /* ============================================
    Layout
@@ -464,6 +426,12 @@ header h1 {
     text-align: left;
 }
 
+.header-system-label {
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 .header-text {
     display: flex;
     flex-direction: column;
@@ -487,6 +455,45 @@ header h1 {
     gap: 10px;
     align-items: center;
     flex-wrap: wrap;
+}
+
+.command-strip {
+    border: var(--frame-border);
+    border-radius: var(--frame-radius);
+    padding: 6px 8px;
+    background: var(--bg-tertiary);
+    box-shadow: var(--frame-inset);
+    height: 56px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.command-strip button {
+    min-height: 34px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    border: var(--frame-border);
+    background: var(--bg-primary);
+    box-shadow: var(--frame-inset);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.command-strip .btn-small {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+}
+
+.command-strip .btn-primary {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: 2px solid rgba(138, 255, 193, 0.8);
+}
+
+.command-strip button:hover {
+    box-shadow: var(--glow);
 }
 
 .header-actions .btn-deploy {
@@ -954,6 +961,22 @@ legend.section-header {
     margin-bottom: 8px;
 }
 
+.sub-panel {
+    border: var(--frame-border);
+    border-radius: var(--frame-radius);
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    margin-bottom: 12px;
+}
+
+.sub-panel-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
 /* ============================================
    App List (Multi-app mode)
    ============================================ */
@@ -1279,8 +1302,18 @@ select.invalid {
         justify-self: center;
     }
 
+    .command-strip {
+        height: auto;
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+
     .progress-rail {
         padding: 10px 12px;
+    }
+
+    .status-panel {
+        margin: 12px 12px 0;
     }
 }
 
@@ -1531,6 +1564,54 @@ footer span {
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 2px;
+}
+
+/* ============================================
+   Status Panel
+   ============================================ */
+.status-panel {
+    border: var(--frame-border);
+    border-radius: var(--frame-radius);
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    margin: 12px 20px 0;
+    box-shadow: var(--frame-inset);
+}
+
+.status-panel-title {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.status-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.status-panel-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 10px;
+    border: var(--frame-border);
+    border-radius: 2px;
+    background: var(--bg-tertiary);
+}
+
+.status-panel-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.status-panel-value {
+    font-size: 0.95rem;
+    color: var(--text-primary);
 }
 
 /* ============================================
@@ -1930,6 +2011,8 @@ label.with-tooltip {
     margin: 0;
     font-size: 1.25rem;
     color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .modal-close {
