@@ -192,8 +192,8 @@ footer {
     grid-template-columns: minmax(500px, 1fr) minmax(600px, 1.2fr);
     gap: 24px;
     padding: 24px;
-    max-width: 2200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     min-height: calc(100vh - 70px - 50px);
     height: calc(100vh - 70px - 50px);
 }
@@ -265,6 +265,7 @@ footer {
     height: fit-content;
 }
 
+
 .side-nav-tabs {
     display: flex;
     flex-direction: column;
@@ -315,6 +316,19 @@ footer {
     height: 2px;
     background: var(--border);
     margin: 6px 6px 2px;
+}
+
+.side-nav-logo {
+    display: flex;
+    justify-content: center;
+    padding: 6px 8px 10px;
+}
+
+.side-nav-logo img {
+    max-width: 100%;
+    height: auto;
+    max-height: 280px;
+    border-radius: 6px;
 }
 
 .side-nav-export {
@@ -408,13 +422,6 @@ header h1 {
     flex-wrap: wrap;
     justify-content: flex-start;
     text-align: left;
-}
-
-header h1 .logo {
-    display: inline-block;
-    height: 144px;
-    width: auto;
-    border-radius: 6px;
 }
 
 .header-text {
@@ -1126,10 +1133,6 @@ select.invalid {
 
     .header-actions {
         justify-self: center;
-    }
-
-    header h1 .logo {
-        height: 117px;
     }
 
     .progress-rail {
