@@ -20,29 +20,6 @@ function copyProfileId() {
 }
 
 /* ============================================================================
-   Theme Toggle
-   ============================================================================ */
-function toggleTheme() {
-    const body = document.body;
-    const isDark = body.getAttribute('data-theme') === 'dark';
-    body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-}
-
-// Load saved theme (dark mode is default)
-(function() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-        document.body.setAttribute('data-theme', 'light');
-        document.querySelector('.theme-toggle').textContent = '🌙';
-    } else {
-        document.body.setAttribute('data-theme', 'dark');
-        document.querySelector('.theme-toggle').textContent = '☀️';
-    }
-})();
-
-/* ============================================================================
    Deploy Guide Modal
    ============================================================================ */
 function showDeployHelp() {
@@ -260,7 +237,6 @@ const actionHandlers = {
     importXml,
     showDeployHelp,
     hideDeployHelp,
-    toggleTheme,
     switchTab,
     switchDeployTab,
     setMode,
