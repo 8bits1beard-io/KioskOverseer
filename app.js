@@ -2,6 +2,96 @@
    Kiosk Overseer - Application Logic
    ============================================================================ */
 
+const SECTION_DEFS = [
+    { key: 'configuration', title: 'CONFIGURATION' },
+    { key: 'kioskMode', title: 'KIOSK MODE' },
+    { key: 'profile', title: 'PROFILE' },
+    { key: 'account', title: 'ACCOUNT' },
+    { key: 'singleAppSettings', title: 'SINGLE-APP SETTINGS' },
+    { key: 'allowedApplications', title: 'ALLOWED APPLICATIONS' },
+    { key: 'autoLaunch', title: 'AUTO-LAUNCH CONFIGURATION' },
+    { key: 'edgeKiosk', title: 'EDGE KIOSK SETTINGS' },
+    { key: 'win32Args', title: 'WIN32 APP ARGUMENTS' },
+    { key: 'startMenuPins', title: 'START MENU PINS' },
+    { key: 'taskbarLayout', title: 'TASKBAR LAYOUT (OPTIONAL)' },
+    { key: 'taskbarExplorer', title: 'TASKBAR & FILE EXPLORER' },
+    { key: 'configurationSummary', title: 'CONFIGURATION SUMMARY' },
+    { key: 'xmlPreview', title: 'XML PREVIEW' },
+    { key: 'deployGuide', title: 'DEPLOYMENT GUIDE' },
+    { key: 'navigation', title: 'NAVIGATION', showNumber: false },
+    { key: 'navSetup', navLabel: 'Kiosk Setup', showNumber: false },
+    { key: 'navApplication', navLabel: 'Allowed Applications', showNumber: false },
+    { key: 'navStartmenu', navLabel: 'Pinned Items', showNumber: false },
+    { key: 'navSystem', navLabel: 'System', showNumber: false },
+    { key: 'navSummary', navLabel: 'Summary', showNumber: false }
+];
+
+const SECTION_START_INDEX = 0;
+
+function formatSectionNumber(value) {
+    return String(value).padStart(2, '0');
+}
+
+function resolveSectionNumbers(defs) {
+    const fallbackNumbers = defs.map((_, index) => formatSectionNumber(index + SECTION_START_INDEX));
+    const candidateNumbers = defs.map((def, index) => def.displayNumber ?? fallbackNumbers[index]);
+    const seen = new Map();
+    let hasDuplicate = false;
+
+    defs.forEach((def, index) => {
+        if (def.showNumber === false) return;
+        const number = candidateNumbers[index];
+        if (seen.has(number)) {
+            hasDuplicate = true;
+        } else {
+            seen.set(number, def.key);
+        }
+    });
+
+    if (hasDuplicate) {
+        console.warn('Duplicate section numbers detected; falling back to index-based numbering.');
+        return fallbackNumbers;
+    }
+
+    return candidateNumbers;
+}
+
+function applySectionLabels() {
+    const defs = SECTION_DEFS;
+    const numbers = resolveSectionNumbers(defs);
+    const numberMap = new Map();
+    defs.forEach((def, index) => {
+        numberMap.set(def.key, numbers[index]);
+    });
+
+    document.querySelectorAll('[data-section-key]').forEach(element => {
+        const key = element.dataset.sectionKey;
+        const def = defs.find(entry => entry.key === key);
+        if (!def) {
+            console.warn(`Missing section definition for key: ${key}`);
+            return;
+        }
+
+        if (element.classList.contains('side-nav-btn')) {
+            if (def.navLabel) {
+                element.textContent = def.navLabel;
+            }
+            return;
+        }
+
+        const title = def.title || def.navLabel || '';
+        if (!title) return;
+
+        if (def.showNumber === false) {
+            element.textContent = title;
+            return;
+        }
+
+        const number = numberMap.get(key);
+        element.textContent = `SECTION ${number}: ${title}`;
+    });
+}
+
 /* ============================================================================
    GUID Generator
    ============================================================================ */
@@ -3474,6 +3564,8 @@ function positionTooltip(tooltipIcon) {
    Initialize
    ============================================================================ */
 document.addEventListener('DOMContentLoaded', async () => {
+    applySectionLabels();
+
     // Load presets first
     await loadPresets();
 

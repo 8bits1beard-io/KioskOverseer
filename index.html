@@ -35,12 +35,12 @@
     <main id="main-content" class="container layout">
         <aside class="side-nav" role="navigation" aria-label="Configuration">
             <div class="side-nav-tabs" role="tablist" aria-label="Configuration sections">
-                <div class="side-nav-title">SECTION 00: NAVIGATION</div>
-                <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup">Kiosk Setup</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application">Allowed Applications</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu">Pinned Items</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-system" id="tab-btn-system" data-action="switchTab" data-arg="system">System</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary">Summary</button>
+                <div class="side-nav-title" data-section-key="navigation"></div>
+                <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup" data-section-key="navSetup">Kiosk Setup</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application" data-section-key="navApplication">Allowed Applications</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">Pinned Items</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-system" id="tab-btn-system" data-action="switchTab" data-arg="system" data-section-key="navSystem">System</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary" data-section-key="navSummary">Summary</button>
             </div>
             <div class="side-nav-logo" role="presentation">
                 <img src="assets/Fallout_MKSA.png" alt="MKSA">
@@ -60,9 +60,7 @@
 
         <!-- Configuration Panel -->
         <section class="panel" aria-labelledby="config-heading">
-            <h2 id="config-heading" class="panel-header">
-                SECTION 00: CONFIGURATION
-            </h2>
+            <h2 id="config-heading" class="panel-header" data-section-key="configuration"></h2>
             <div class="panel-content with-tabs">
                 <div class="progress-rail" role="list" aria-label="Setup progress">
                     <div class="progress-step" data-step="setup" role="listitem">
@@ -111,7 +109,7 @@
                         <p class="section-hint">Step 1: Choose kiosk mode, set profile details, then pick the account type.</p>
                         <!-- Kiosk Mode -->
                         <fieldset class="section">
-                        <legend class="section-header">SECTION 01: KIOSK MODE</legend>
+                        <legend class="section-header" data-section-key="kioskMode"></legend>
                     <div class="section-content">
                         <div class="toggle-group" role="group" aria-label="Kiosk mode selection">
                             <button type="button" id="modeSingle" class="active" data-action="setMode" data-arg="single" aria-pressed="true">Single-App</button>
@@ -127,7 +125,7 @@
                 </fieldset>
                 <!-- Profile Configuration -->
                 <fieldset class="section">
-                    <legend class="section-header">SECTION 02: PROFILE</legend>
+                    <legend class="section-header" data-section-key="profile"></legend>
                     <div class="section-content">
                         <div class="form-group">
                             <label for="configName" class="with-tooltip">
@@ -156,7 +154,7 @@
 
                 <!-- Account Configuration -->
                 <fieldset class="section">
-                    <legend class="section-header">SECTION 03: ACCOUNT</legend>
+                    <legend class="section-header" data-section-key="account"></legend>
                     <div class="section-content">
                         <div class="form-group">
                             <label id="account-type-label" class="with-tooltip">
@@ -233,7 +231,7 @@
                 <!-- Single-App Configuration -->
                 <div id="singleAppConfig">
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 04: SINGLE-APP SETTINGS</legend>
+                        <legend class="section-header" data-section-key="singleAppSettings"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">PRESETS</div>
@@ -459,7 +457,7 @@
                 <!-- Multi-App Configuration -->
                 <div id="multiAppConfig" class="hidden" aria-hidden="true">
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 05: ALLOWED APPLICATIONS</legend>
+                        <legend class="section-header" data-section-key="allowedApplications"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">ADD APPLICATION</div>
@@ -559,7 +557,7 @@
                     </fieldset>
 
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 06: AUTO-LAUNCH CONFIGURATION</legend>
+                        <legend class="section-header" data-section-key="autoLaunch"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">AUTO-LAUNCH</div>
@@ -578,7 +576,7 @@
                     </fieldset>
 
                     <fieldset class="section hidden" id="multiAppEdgeConfig" aria-hidden="true">
-                        <legend class="section-header">SECTION 07: EDGE KIOSK SETTINGS</legend>
+                        <legend class="section-header" data-section-key="edgeKiosk"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">EDGE AUTO-LAUNCH</div>
@@ -628,7 +626,7 @@
                     </fieldset>
 
                     <fieldset class="section hidden" id="win32ArgsConfig" aria-hidden="true">
-                        <legend class="section-header">SECTION 08: WIN32 APP ARGUMENTS</legend>
+                        <legend class="section-header" data-section-key="win32Args"></legend>
                         <div class="section-content">
                             <div class="form-group">
                                 <label for="win32AutoLaunchArgs" class="with-tooltip">
@@ -648,7 +646,7 @@
                     <div class="tab-content" role="tabpanel" id="tab-startmenu" aria-labelledby="tab-btn-startmenu">
                     <p class="section-hint">Step 3: Add Start menu pins and optional shortcuts.</p>
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 09: START MENU PINS</legend>
+                        <legend class="section-header" data-section-key="startMenuPins"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">PINNED SHORTCUTS</div>
@@ -898,7 +896,7 @@
                         </div>
                     </fieldset>
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 10: TASKBAR LAYOUT (OPTIONAL)</legend>
+                        <legend class="section-header" data-section-key="taskbarLayout"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">TASKBAR PINS</div>
@@ -1108,7 +1106,7 @@
                     <div class="tab-content" role="tabpanel" id="tab-system" aria-labelledby="tab-btn-system">
                     <p class="section-hint">Step 4: Choose taskbar visibility and File Explorer restrictions.</p>
                     <fieldset class="section">
-                        <legend class="section-header">SECTION 11: TASKBAR &amp; FILE EXPLORER</legend>
+                        <legend class="section-header" data-section-key="taskbarExplorer"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">SYSTEM CONTROLS</div>
@@ -1150,7 +1148,7 @@
                     <div class="tab-content" role="tabpanel" id="tab-summary" aria-labelledby="tab-btn-summary">
                     <p class="section-hint">Step 5: Review the summary and export your configuration.</p>
                     <fieldset class="section">
-                            <legend class="section-header">SECTION 12: CONFIGURATION SUMMARY</legend>
+                            <legend class="section-header" data-section-key="configurationSummary"></legend>
                             <div class="section-content">
                                 <div class="sub-panel">
                                 <div class="sub-panel-title">EXPORT STATUS</div>
@@ -1177,7 +1175,7 @@
         <!-- Preview Panel -->
         <section class="panel" aria-labelledby="preview-heading">
             <h2 id="preview-heading" class="panel-header">
-                <span>SECTION 13: XML PREVIEW</span>
+                <span data-section-key="xmlPreview"></span>
             </h2>
             <div class="panel-content preview-content">
                 <div style="display: flex; justify-content: center; margin-bottom: 6px;">
@@ -1201,7 +1199,7 @@
         <div class="modal-backdrop" data-action="hideDeployHelp"></div>
         <div class="modal-content modal-wide">
             <div class="modal-header">
-                <h2 id="deployModalTitle">SECTION 90: DEPLOYMENT GUIDE</h2>
+                <h2 id="deployModalTitle" data-section-key="deployGuide"></h2>
                 <button type="button" class="modal-close" data-action="hideDeployHelp" aria-label="Close dialog">&times;</button>
             </div>
             <div class="modal-body">
