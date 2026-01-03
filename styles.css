@@ -344,6 +344,7 @@ footer {
 
 .side-nav-logo-caption a {
     color: var(--accent);
+    text-decoration: underline;
 }
 
 .side-nav-logo-inspiration {
