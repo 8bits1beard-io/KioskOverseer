@@ -136,6 +136,12 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
 
 ---
 
+## Themes
+
+Use the **Theme** toggle next to the build label to switch between the Fallout theme and the Fluent-inspired alternative. The choice is saved in local storage.
+
+---
+
 ## XML Namespaces
 
 | Namespace | Windows Version | Features Added |
