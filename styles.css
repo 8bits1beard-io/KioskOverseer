@@ -106,6 +106,31 @@
     --page-bg: linear-gradient(180deg, #F6F7FB 0%, #EDF1F6 100%);
 }
 
+[data-theme="fluent"] .xml-preview,
+[data-theme="fluent"] .xml-preview.crt-terminal {
+    background: #000000;
+    color: #FFFFFF;
+}
+
+[data-theme="fluent"] .xml-preview .declaration,
+[data-theme="fluent"] .xml-preview .comment,
+[data-theme="fluent"] .xml-preview .cdata {
+    color: #B7B7B7;
+}
+
+[data-theme="fluent"] .xml-preview .tag {
+    color: #8AB4FF;
+}
+
+[data-theme="fluent"] .xml-preview .attr {
+    color: #7DE3FF;
+}
+
+[data-theme="fluent"] .xml-preview .value,
+[data-theme="fluent"] .xml-preview .cdata-content {
+    color: #FFFFFF;
+}
+
 /* ============================================
    Accessibility - Skip Link
    ============================================ */
