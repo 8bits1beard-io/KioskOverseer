@@ -20,6 +20,10 @@ function validate() {
     const rules = [
         () => {
             const errs = [];
+            const configName = dom.get('configName').value.trim();
+            if (!configName) {
+                errs.push('Configuration Name is required');
+            }
             const profileId = dom.get('profileId').value;
             if (!profileId) {
                 errs.push('Profile GUID is required');

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.3">
+    <link rel="stylesheet" href="styles.css?v=1.0.4">
     <link rel="icon" type="image/png" href="assets/logo-mksa.png">
 </head>
 <body>
@@ -16,11 +16,11 @@
 
     <header role="banner">
         <div class="header-top">
-            <h1 class="header-system-label">KIOSK OVERSEER // BUILD 1.0.3</h1>
+            <h1 class="header-system-label">KIOSK OVERSEER // BUILD 1.0.4</h1>
             <nav class="header-actions command-strip" aria-label="Main actions">
                 <button type="button" class="btn-secondary" data-action="loadPreset" data-arg="blank">New</button>
                 <button type="button" class="btn-secondary" data-action="loadConfig">Load Config</button>
-                <button type="button" class="btn-secondary" data-action="saveConfigAs">Save</button>
+                <button type="button" class="btn-secondary" data-action="saveConfigAs">Save Config</button>
                 <button type="button" class="btn-secondary" data-action="importXml" title="Assigned Access XML only">Import XML</button>
                 <button type="button" class="btn-secondary" data-action="copyXml">Copy XML</button>
                 <button type="button" class="btn-secondary" data-action="downloadXml">Download XML</button>
@@ -37,11 +37,10 @@
         <aside class="side-nav" role="navigation" aria-label="Configuration">
             <div class="side-nav-tabs" role="tablist" aria-label="Configuration sections">
                 <div class="side-nav-title" data-section-key="navigation"></div>
-                <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup" data-section-key="navSetup">Kiosk Setup</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application" data-section-key="navApplication">Allowed Applications</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">Pinned Items</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-system" id="tab-btn-system" data-action="switchTab" data-arg="system" data-section-key="navSystem">System</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary" data-section-key="navSummary">Summary</button>
+                <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup" data-section-key="navSetup">STEP 1: Kiosk Type</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application" data-section-key="navApplication">STEP 2: Allowed Applications</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">STEP 3: Pinned Items</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary" data-section-key="navSummary">STEP 4: Summary</button>
             </div>
             <div class="side-nav-logo" role="presentation">
                 <img src="assets/Fallout_MKSA.png" alt="MKSA">
@@ -76,12 +75,8 @@
                         <div class="progress-label">3. Pins</div>
                         <div class="progress-status">Start + taskbar</div>
                     </div>
-                    <div class="progress-step" data-step="system" role="listitem">
-                        <div class="progress-label">4. System</div>
-                        <div class="progress-status">Optional controls</div>
-                    </div>
                     <div class="progress-step" data-step="export" role="listitem">
-                        <div class="progress-label">5. Export</div>
+                        <div class="progress-label">4. Export</div>
                         <div class="progress-status">Validate &amp; export</div>
                     </div>
                 </div>
@@ -89,25 +84,6 @@
                 <div class="tab-panels">
                     <!-- Setup Tab -->
                     <div class="tab-content active" role="tabpanel" id="tab-setup" aria-labelledby="tab-btn-setup">
-                        <div class="frame-block preset-block">
-                            <div class="frame-block-title">Presets</div>
-                            <div class="example-grid" role="group" aria-label="Example configurations">
-                                <button type="button" class="example-card" data-action="applyExampleConfig" data-arg="lobbyEdge">
-                                    <span class="example-title">Lobby Edge Kiosk</span>
-                                    <span class="example-detail">Single-app fullscreen browser</span>
-                                </button>
-                                <button type="button" class="example-card" data-action="applyExampleConfig" data-arg="receptionMulti">
-                                    <span class="example-title">Reception Multi-App</span>
-                                    <span class="example-detail">Edge + utilities + Start pins</span>
-                                </button>
-                                <button type="button" class="example-card" data-action="applyExampleConfig" data-arg="classroomRestricted">
-                                    <span class="example-title">Classroom Restricted</span>
-                                    <span class="example-detail">Group-based access</span>
-                                </button>
-                            </div>
-                            <div class="inline-note">NOTE: These presets are starting points. Update names, URLs, and account details before exporting.</div>
-                        </div>
-                        <p class="section-hint">Step 1: Choose kiosk mode, set profile details, then pick the account type.</p>
                         <!-- Kiosk Mode -->
                         <fieldset class="section">
                         <legend class="section-header" data-section-key="kioskMode"></legend>
@@ -118,9 +94,7 @@
                             <button type="button" id="modeRestricted" data-action="setMode" data-arg="restricted" aria-pressed="false">Restricted User</button>
                         </div>
                         <p class="hint" style="margin-top: 10px;" id="kiosk-mode-hint">
-                            <strong>Single-App:</strong> Runs one app fullscreen (e.g., Edge kiosk)<br>
-                            <strong>Multi-App:</strong> Allows multiple apps with custom Start menu<br>
-                            <strong>Restricted User:</strong> Desktop with limited apps, supports user groups
+                            <span id="kioskModeHintText"></span>
                         </p>
                     </div>
                 </fieldset>
@@ -178,7 +152,7 @@
                                     <button type="button" class="tooltip-icon" aria-label="Help for Display Name" aria-describedby="displayName-tooltip">?</button>
                                     <span class="tooltip-content" id="displayName-tooltip" role="tooltip">The friendly name shown on the Windows login screen. Windows will create a managed local account (typically "kioskUser0") that auto-logs in. This display name is just for identification.</span>
                                 </label>
-                                <input type="text" id="displayName" value="Kiosk User" placeholder="e.g., Kiosk User" data-change="updatePreview" aria-describedby="displayName-tooltip">
+                                <input type="text" id="displayName" placeholder="e.g., Kiosk User" data-change="updatePreview" aria-describedby="displayName-tooltip">
                             </div>
                         </div>
 
@@ -223,33 +197,59 @@
                         </div>
                     </div>
                 </fieldset>
+                <fieldset class="section">
+                    <legend class="section-header" data-section-key="taskbarControls"></legend>
+                    <div class="section-content">
+                        <div class="sub-panel">
+                        <div class="sub-panel-title">TASKBAR</div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <span class="toggle-switch">
+                                    <input type="checkbox" id="showTaskbar" checked data-change="updatePreview" aria-describedby="showTaskbar-tooltip">
+                                    <span class="toggle-slider" aria-hidden="true"></span>
+                                </span>
+                                <label for="showTaskbar" class="with-tooltip">
+                                    Show Taskbar
+                                    <button type="button" class="tooltip-icon" aria-label="Help for Show Taskbar" aria-describedby="showTaskbar-tooltip">?</button>
+                                    <span class="tooltip-content" id="showTaskbar-tooltip" role="tooltip">When enabled, users see the Windows taskbar with Start button and running apps. Disable for a more locked-down experience where users can only access apps via the Start menu.</span>
+                                </label>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="section">
+                    <legend class="section-header" data-section-key="fileExplorerControls"></legend>
+                    <div class="section-content">
+                        <div class="sub-panel">
+                        <div class="sub-panel-title">FILE EXPLORER</div>
+                        <div class="form-group">
+                            <label for="fileExplorerAccess" class="with-tooltip">
+                                File Explorer Access
+                                <button type="button" class="tooltip-icon" aria-label="Help for File Explorer Access" aria-describedby="fileExplorerAccess-tooltip">?</button>
+                                <span class="tooltip-content" id="fileExplorerAccess-tooltip" role="tooltip">No Access: File Explorer is blocked. Downloads Only: Access to Downloads folder. Removable Drives: Access to USB drives. Downloads + Removable: Both options. No Restriction: Full file system access.</span>
+                            </label>
+                            <select id="fileExplorerAccess" data-change="updatePreview" aria-describedby="fileExplorerAccess-tooltip">
+                                <option value="none">No Access (Blocked)</option>
+                                <option value="downloads">Downloads Folder Only</option>
+                                <option value="removable">Removable Drives Only</option>
+                                <option value="downloads-removable">Downloads + Removable Drives</option>
+                                <option value="all">No Restriction (All Locations)</option>
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                </fieldset>
                     </div>
                     <!-- End Setup Tab -->
 
                     <!-- Application Tab -->
                     <div class="tab-content" role="tabpanel" id="tab-application" aria-labelledby="tab-btn-application">
-                        <p class="section-hint">Step 2: Add allowed apps and configure auto-launch if needed.</p>
                 <!-- Single-App Configuration -->
                 <div id="singleAppConfig">
                     <fieldset class="section">
                         <legend class="section-header" data-section-key="singleAppSettings"></legend>
                         <div class="section-content">
-                            <div class="sub-panel">
-                            <div class="sub-panel-title">PRESETS</div>
-                            <div class="form-group">
-                                <label class="with-tooltip">
-                                    Single-App Presets
-                                    <button type="button" class="tooltip-icon" aria-label="Help for Single-App Presets" aria-describedby="singleAppPresets-tooltip">?</button>
-                                    <span class="tooltip-content" id="singleAppPresets-tooltip" role="tooltip">Quick-fill common single-app choices. You can edit URLs and arguments after selecting a preset.</span>
-                                </label>
-                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                    <button type="button" class="btn-secondary btn-small" data-action="applySingleAppPreset" data-arg="edge">Edge Kiosk</button>
-                                    <button type="button" class="btn-secondary btn-small" data-action="applySingleAppPreset" data-arg="chrome">Chrome Kiosk</button>
-                                    <button type="button" class="btn-secondary btn-small" data-action="applySingleAppPreset" data-arg="firefox">Firefox Kiosk</button>
-                                </div>
-                            </div>
-                            </div>
-
                             <div class="sub-panel">
                             <div class="sub-panel-title">APPLICATION TYPE</div>
                             <div class="form-group">
@@ -479,10 +479,6 @@
                                     <button type="button" class="btn-primary" data-action="addApp">Add</button>
                                 </div>
                             </div>
-                            <div class="callout callout-compact" data-callout-id="apps">
-                                <div class="callout-body">TIP: Add at least one allowed app. Use the quick buttons for common defaults.</div>
-                                <button type="button" class="callout-close" data-action="dismissCallout" data-arg="apps" aria-label="Dismiss">×</button>
-                            </div>
                             </div>
 
                             <div class="sub-panel">
@@ -645,34 +641,22 @@
 
                     <!-- Start Menu Tab (Multi-App only) -->
                     <div class="tab-content" role="tabpanel" id="tab-startmenu" aria-labelledby="tab-btn-startmenu">
-                    <p class="section-hint">Step 3: Add Start menu pins and optional shortcuts.</p>
                     <fieldset class="section">
                         <legend class="section-header" data-section-key="startMenuPins"></legend>
                         <div class="section-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">PINNED SHORTCUTS</div>
-                            <div class="callout callout-compact" data-callout-id="pins">
-                                <div class="callout-body">TIP: Pins shape the on-device experience. Add a few so users can navigate quickly.</div>
-                                <button type="button" class="callout-close" data-action="dismissCallout" data-arg="pins" aria-label="Dismiss">×</button>
-                            </div>
-                            <div class="why-note">NOTE: Start pins are shortcuts. If a .lnk does not exist on the device, run the Shortcut Creator after export.</div>
                             <div class="form-group">
                                 <label class="with-tooltip">
                                     Add Start Menu Shortcut
                                     <button type="button" class="tooltip-icon" aria-label="Help for Add Shortcut" aria-describedby="addShortcut-tooltip">?</button>
-                                    <span class="tooltip-content" id="addShortcut-tooltip" role="tooltip">Create shortcuts that will be pinned to the Start menu. The deployment script creates .lnk files in the Start Menu Programs folder.</span>
+                                    <span class="tooltip-content" id="addShortcut-tooltip" role="tooltip">Creates a Start pin from a desktop shortcut. If you set an icon path, that file must exist on the device. Edge shortcuts may ignore custom name/icon; use Edge secondary tiles for site-specific names.</span>
                                 </label>
                                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        DesktopAppLink pins reference .lnk files. If the shortcut doesn’t already exist on the device, you’ll need to run the Shortcut Creator script after exporting.
-                                    </div>
                                     <div style="display: flex; gap: 8px;">
                                         <div style="flex: 1;">
                                             <label for="pinName" style="font-size: 0.75rem; color: var(--text-secondary);">Shortcut Name *</label>
                                             <input type="text" id="pinName" placeholder="e.g., Microsoft Edge" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
                                         <div style="flex: 2;">
                                             <label for="pinTarget" style="font-size: 0.75rem; color: var(--text-secondary);">Target Path *</label>
@@ -729,13 +713,7 @@
                                         <div style="flex: 1;">
                                             <label for="pinIconPath" style="font-size: 0.75rem; color: var(--text-secondary);">Icon Path (optional)</label>
                                             <input type="text" id="pinIconPath" placeholder="e.g., C:\path\to\icon.ico" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
-                                    </div>
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        NOTE: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
                                     </div>
                                     <button type="button" class="btn-primary" data-action="addPin" style="align-self: flex-start;">Add Shortcut</button>
                                 </div>
@@ -748,12 +726,9 @@
                                 <label class="with-tooltip">
                                     Edge Site Tile (Secondary Tile)
                                     <button type="button" class="tooltip-icon" aria-label="Help for Edge Site Tile" aria-describedby="edgeTile-tooltip">?</button>
-                                    <span class="tooltip-content" id="edgeTile-tooltip" role="tooltip">Creates a Start menu tile that opens a specific site in Edge. Requires the Edge packaged app ID and msedge.exe in Allowed Apps. Secondary tiles do not force InPrivate; use Edge policies if you need strict privacy behavior.</span>
+                                    <span class="tooltip-content" id="edgeTile-tooltip" role="tooltip">Creates an Edge site tile with a custom name. The icon always comes from Edge and can’t be overridden.</span>
                                 </label>
                                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        DesktopAppLink pins reference .lnk files. If the shortcut doesn’t already exist on the device, you’ll need to run the Shortcut Creator script after exporting.
-                                    </div>
                                     <div style="display: flex; gap: 8px;">
                                         <div style="flex: 1;">
                                             <label for="edgeTileName" style="font-size: 0.75rem; color: var(--text-secondary);">Tile Name *</label>
@@ -905,17 +880,13 @@
                                 <label class="with-tooltip">
                                     Add Taskbar Pin
                                     <button type="button" class="tooltip-icon" aria-label="Help for Taskbar Pins" aria-describedby="taskbarPins-tooltip">?</button>
-                                    <span class="tooltip-content" id="taskbarPins-tooltip" role="tooltip">Taskbar pins support packaged app IDs (AUMID) or desktop app target paths. The tool creates the shortcut; icon paths are only used for shortcuts you create.</span>
+                                    <span class="tooltip-content" id="taskbarPins-tooltip" role="tooltip">Pins apps to the taskbar for quick access. If you set an icon path, that file must exist on the device.</span>
                                 </label>
-                                <div class="why-note">NOTE: Taskbar pins support packaged app IDs or .lnk shortcuts only.</div>
                                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg-tertiary); border-radius: var(--frame-radius);">
                                     <div style="display: flex; gap: 8px;">
                                         <div style="flex: 1;">
                                             <label for="taskbarPinName" style="font-size: 0.75rem; color: var(--text-secondary);">Name *</label>
                                             <input type="text" id="taskbarPinName" placeholder="e.g., File Explorer" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
                                         <div style="width: 180px;">
                                             <label for="taskbarPinType" style="font-size: 0.75rem; color: var(--text-secondary);">Type</label>
@@ -923,7 +894,6 @@
                                                 <option value="desktopAppLink">Desktop App (Target Path)</option>
                                                 <option value="packagedAppId">Packaged App ID</option>
                                             </select>
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary);" title="Pins a .lnk shortcut path; the shortcut must exist on the device.">desktopAppLink (?)</div>
                                         </div>
                                     </div>
                                     <div id="taskbarPackagedFields" class="hidden" aria-hidden="true">
@@ -948,9 +918,6 @@
                                         <div style="margin-top: 8px;">
                                             <label for="taskbarPinIconPath" style="font-size: 0.75rem; color: var(--text-secondary);">Icon Path (optional, shortcuts only)</label>
                                             <input type="text" id="taskbarPinIconPath" placeholder="C:\\path\\to\\icon.ico" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
                                         <div style="margin-top: 8px;">
                                             <label for="taskbarPinTargetPreset" style="font-size: 0.75rem; color: var(--text-secondary);">Use Allowed App</label>
@@ -990,9 +957,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic;">
-                                        NOTE: Provide the icon file on the target device. This tool creates shortcuts but does not supply icon files.
-                                    </div>
                                     <button type="button" class="btn-primary" data-action="addTaskbarPin" style="align-self: flex-start;">Add Taskbar Pin</button>
                                 </div>
                             </div>
@@ -1016,9 +980,6 @@
                                         <div style="flex: 1;">
                                             <label for="editTaskbarPinName" style="font-size: 0.75rem; color: var(--text-secondary);">Name *</label>
                                             <input type="text" id="editTaskbarPinName" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
                                         <div style="width: 180px;">
                                             <label for="editTaskbarPinType" style="font-size: 0.75rem; color: var(--text-secondary);">Type</label>
@@ -1050,9 +1011,6 @@
                                         <div style="margin-top: 8px;">
                                             <label for="editTaskbarPinIconPath" style="font-size: 0.75rem; color: var(--text-secondary);">Icon Path (optional, shortcuts only)</label>
                                             <input type="text" id="editTaskbarPinIconPath" style="width: 100%;">
-                                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-style: italic; margin-top: 4px;">
-                                                Assigned Access may ignore custom name/icon for Edge-backed shortcuts. Use Edge 'secondary tile' Start pins for site-specific names.
-                                            </div>
                                         </div>
                                         <div style="margin-top: 8px;">
                                             <label for="editTaskbarPinTargetPreset" style="font-size: 0.75rem; color: var(--text-secondary);">Use Allowed App</label>
@@ -1103,59 +1061,13 @@
                     </div>
                     <!-- End Start Menu Tab -->
 
-                    <!-- System Tab (Multi-App only) -->
-                    <div class="tab-content" role="tabpanel" id="tab-system" aria-labelledby="tab-btn-system">
-                    <p class="section-hint">Step 4: Choose taskbar visibility and File Explorer restrictions.</p>
-                    <fieldset class="section">
-                        <legend class="section-header" data-section-key="taskbarExplorer"></legend>
-                        <div class="section-content">
-                            <div class="sub-panel">
-                            <div class="sub-panel-title">SYSTEM CONTROLS</div>
-                            <div class="form-group">
-                                <div class="checkbox-group">
-                                    <span class="toggle-switch">
-                                        <input type="checkbox" id="showTaskbar" checked data-change="updatePreview" aria-describedby="showTaskbar-tooltip">
-                                        <span class="toggle-slider" aria-hidden="true"></span>
-                                    </span>
-                                    <label for="showTaskbar" class="with-tooltip">
-                                        Show Taskbar
-                                        <button type="button" class="tooltip-icon" aria-label="Help for Show Taskbar" aria-describedby="showTaskbar-tooltip">?</button>
-                                        <span class="tooltip-content" id="showTaskbar-tooltip" role="tooltip">When enabled, users see the Windows taskbar with Start button and running apps. Disable for a more locked-down experience where users can only access apps via the Start menu.</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fileExplorerAccess" class="with-tooltip">
-                                    File Explorer Access
-                                    <button type="button" class="tooltip-icon" aria-label="Help for File Explorer Access" aria-describedby="fileExplorerAccess-tooltip">?</button>
-                                    <span class="tooltip-content" id="fileExplorerAccess-tooltip" role="tooltip">No Access: File Explorer is blocked. Downloads Only: Access to Downloads folder. Removable Drives: Access to USB drives. Downloads + Removable: Both options. No Restriction: Full file system access.</span>
-                                </label>
-                                <select id="fileExplorerAccess" data-change="updatePreview" aria-describedby="fileExplorerAccess-tooltip">
-                                    <option value="none">No Access (Blocked)</option>
-                                    <option value="downloads">Downloads Folder Only</option>
-                                    <option value="removable">Removable Drives Only</option>
-                                    <option value="downloads-removable">Downloads + Removable Drives</option>
-                                    <option value="all">No Restriction (All Locations)</option>
-                                </select>
-                            </div>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    </div>
-                    <!-- End System Tab -->
-
                     <div class="tab-content" role="tabpanel" id="tab-summary" aria-labelledby="tab-btn-summary">
-                    <p class="section-hint">Step 5: Review the summary and export your configuration.</p>
                     <fieldset class="section">
                             <legend class="section-header" data-section-key="configurationSummary"></legend>
                             <div class="section-content">
                                 <div class="sub-panel">
                                 <div class="sub-panel-title">EXPORT STATUS</div>
-                                <div id="summaryNextAction" class="next-action" role="status" aria-live="polite"></div>
                                 <div class="callout callout-compact" data-callout-id="export">
-                                    <div class="callout-body">NOTE: Once the summary looks right, download the XML or helper scripts from the header.</div>
                                     <button type="button" class="callout-close" data-action="dismissCallout" data-arg="export" aria-label="Dismiss">×</button>
                                 </div>
                                 <div class="status info">
@@ -1208,6 +1120,18 @@
                     <div class="preview-meta-item">
                         <div class="preview-meta-label">Status</div>
                         <div class="preview-meta-value" id="previewStatus">—</div>
+                    </div>
+                    <div class="preview-meta-item">
+                        <div class="preview-meta-label">Show Taskbar</div>
+                        <div class="preview-meta-value" id="previewShowTaskbar">—</div>
+                    </div>
+                    <div class="preview-meta-item">
+                        <div class="preview-meta-label">File Explorer</div>
+                        <div class="preview-meta-value" id="previewFileExplorer">—</div>
+                    </div>
+                    <div class="preview-meta-item">
+                        <div class="preview-meta-label">Auto Logon</div>
+                        <div class="preview-meta-value" id="previewAutoLogon">—</div>
                     </div>
                 </div>
                 <div id="validationStatus" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -1394,12 +1318,12 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.0.3"></script>
-    <script src="state.js?v=1.0.3"></script>
-    <script src="helpers.js?v=1.0.3"></script>
-    <script src="summary.js?v=1.0.3"></script>
-    <script src="xml.js?v=1.0.3"></script>
-    <script src="validation.js?v=1.0.3"></script>
-    <script src="app.js?v=1.0.3"></script>
+    <script src="dom.js?v=1.0.4"></script>
+    <script src="state.js?v=1.0.4"></script>
+    <script src="helpers.js?v=1.0.4"></script>
+    <script src="summary.js?v=1.0.4"></script>
+    <script src="xml.js?v=1.0.4"></script>
+    <script src="validation.js?v=1.0.4"></script>
+    <script src="app.js?v=1.0.4"></script>
 </body>
 </html>

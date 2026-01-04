@@ -3,18 +3,14 @@
    ============================================================================ */
 let appPresets = null;
 let pinPresets = null;
-let singleAppPresets = null;
-
 async function loadPresets() {
     try {
-        const [appResponse, pinResponse, singleAppResponse] = await Promise.all([
+        const [appResponse, pinResponse] = await Promise.all([
             fetch('data/app-presets.json'),
-            fetch('data/pin-presets.json'),
-            fetch('data/single-app-presets.json')
+            fetch('data/pin-presets.json')
         ]);
         appPresets = await appResponse.json();
         pinPresets = await pinResponse.json();
-        singleAppPresets = await singleAppResponse.json();
     } catch (e) {
         console.error('Failed to load presets:', e);
     }

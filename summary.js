@@ -112,6 +112,8 @@ function updateSummary() {
     const pinsValue = state.mode === 'single'
         ? 'N/A'
         : `Start: ${state.startPins.length} / Taskbar: ${state.taskbarPins.length}`;
+    const showTaskbar = dom.get('showTaskbar')?.checked;
+    const fileExplorerLabel = dom.get('fileExplorerAccess')?.selectedOptions?.[0]?.textContent || 'Unknown';
 
     summaryOverview.innerHTML = [
         { label: 'Name', value: escapeXml(configName) },
@@ -119,6 +121,8 @@ function updateSummary() {
         { label: 'Account', value: escapeXml(accountSummary) },
         { label: 'Allowed Apps', value: escapeXml(allowedAppsValue) },
         { label: 'Pins', value: escapeXml(pinsValue) },
+        { label: 'Show Taskbar', value: showTaskbar ? 'Enabled' : 'Hidden' },
+        { label: 'File Explorer', value: escapeXml(fileExplorerLabel) },
         { label: 'Export Status', value: escapeXml(exportStatus) }
     ].map(row => `
         <div class="summary-card">
@@ -126,9 +130,6 @@ function updateSummary() {
             <div class="summary-card-value">${row.value}</div>
         </div>
     `).join('');
-
-    const showTaskbar = dom.get('showTaskbar')?.checked;
-    const fileExplorerLabel = dom.get('fileExplorerAccess')?.selectedOptions?.[0]?.textContent || 'Unknown';
 
     const allowedAppsDetails = state.mode === 'single'
         ? 'Single-app mode uses the kiosk app selection.'
@@ -179,12 +180,8 @@ function updateNextActionBanner() {
     const appsStatus = typeof getAppsStatus === 'function' ? getAppsStatus() : 'pending';
     const exportStatus = typeof getExportStatus === 'function' ? getExportStatus() : 'pending';
 
-    if (setupStatus !== 'complete') {
-        message = 'Next: complete profile and account details in Setup.';
-    } else if (appsStatus !== 'complete') {
+    if (appsStatus !== 'complete') {
         message = 'Next: add at least one allowed app.';
-    } else if (state.mode !== 'single' && state.startPins.length === 0) {
-        message = 'Optional: add Start menu pins for quick access.';
     } else if (exportStatus !== 'ready') {
         message = 'Next: resolve validation errors to enable export.';
     } else {

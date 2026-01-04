@@ -7,6 +7,8 @@ const SECTION_DEFS = [
     { key: 'kioskMode', title: 'KIOSK MODE' },
     { key: 'profile', title: 'PROFILE' },
     { key: 'account', title: 'ACCOUNT' },
+    { key: 'taskbarControls', title: 'TASKBAR' },
+    { key: 'fileExplorerControls', title: 'FILE EXPLORER ACCESS' },
     { key: 'singleAppSettings', title: 'SINGLE-APP SETTINGS' },
     { key: 'allowedApplications', title: 'ALLOWED APPLICATIONS' },
     { key: 'autoLaunch', title: 'AUTO-LAUNCH CONFIGURATION' },
@@ -14,16 +16,14 @@ const SECTION_DEFS = [
     { key: 'win32Args', title: 'WIN32 APP ARGUMENTS' },
     { key: 'startMenuPins', title: 'START MENU PINS' },
     { key: 'taskbarLayout', title: 'TASKBAR LAYOUT (OPTIONAL)' },
-    { key: 'taskbarExplorer', title: 'TASKBAR & FILE EXPLORER' },
     { key: 'configurationSummary', title: 'CONFIGURATION SUMMARY' },
     { key: 'xmlPreview', title: 'XML PREVIEW' },
     { key: 'deployGuide', title: 'DEPLOYMENT GUIDE' },
     { key: 'navigation', title: 'NAVIGATION', showNumber: false },
-    { key: 'navSetup', navLabel: 'Kiosk Setup', showNumber: false },
-    { key: 'navApplication', navLabel: 'Allowed Applications', showNumber: false },
-    { key: 'navStartmenu', navLabel: 'Pinned Items', showNumber: false },
-    { key: 'navSystem', navLabel: 'System', showNumber: false },
-    { key: 'navSummary', navLabel: 'Summary', showNumber: false }
+    { key: 'navSetup', navLabel: 'STEP 1: KIOSK TYPE', showNumber: false },
+    { key: 'navApplication', navLabel: 'STEP 2: ALLOWED APPLICATIONS', showNumber: false },
+    { key: 'navStartmenu', navLabel: 'STEP 3: PINNED ITEMS', showNumber: false },
+    { key: 'navSummary', navLabel: 'STEP 4: SUMMARY', showNumber: false }
 ];
 
 const SECTION_START_INDEX = 0;
@@ -181,16 +181,16 @@ function pulseTab(tabId) {
 function updateTabVisibility() {
     const isMultiOrRestricted = state.mode === 'multi' || state.mode === 'restricted';
     const startMenuTab = dom.get('tab-btn-startmenu');
-    const systemTab = dom.get('tab-btn-system');
 
     // Show/hide tabs based on mode - both multi and restricted need these tabs
-    startMenuTab.classList.toggle('hidden', !isMultiOrRestricted);
-    systemTab.classList.toggle('hidden', !isMultiOrRestricted);
+    if (startMenuTab) {
+        startMenuTab.classList.toggle('hidden', !isMultiOrRestricted);
+    }
 
     // If switching to single mode and currently on a multi-only tab, switch to Application tab
     if (!isMultiOrRestricted) {
         const activeTab = document.querySelector('.side-nav-btn.active');
-        if (activeTab && (activeTab.id === 'tab-btn-startmenu' || activeTab.id === 'tab-btn-system')) {
+        if (activeTab && activeTab.id === 'tab-btn-startmenu') {
             switchTab('application');
         }
     }
@@ -227,6 +227,8 @@ function setMode(mode) {
 
     // Update tab visibility based on mode
     updateTabVisibility();
+
+    updateKioskModeHint();
 
     // Update auto-launch selector when switching to multi/restricted mode
     if (mode === 'multi' || mode === 'restricted') {
@@ -332,8 +334,6 @@ const actionHandlers = {
     setMode,
     setAccountType,
     generateGuid,
-    applySingleAppPreset,
-    applyExampleConfig,
     addApp,
     addCommonApp,
     addPin,
@@ -445,90 +445,21 @@ function initCallouts() {
     });
 }
 
-function applySingleAppPreset(preset) {
-    if (!singleAppPresets || !singleAppPresets.presets) {
-        alert('Single-app presets are not available yet. Please try again.');
+function updateKioskModeHint() {
+    const hint = dom.get('kioskModeHintText');
+    if (!hint) return;
+
+    if (state.mode === 'single') {
+        hint.textContent = 'Single-App: Runs one app fullscreen (e.g., Edge kiosk)';
         return;
     }
 
-    const config = singleAppPresets.presets[preset];
-    if (!config) return;
-
-    const appTypeSelect = dom.get('appType');
-    const edgeSourceType = dom.get('edgeSourceType');
-    const edgeUrl = dom.get('edgeUrl');
-    const edgeKioskType = dom.get('edgeKioskType');
-    const win32Path = dom.get('win32Path');
-    const win32Args = dom.get('win32Args');
-
-    appTypeSelect.value = config.appType;
-
-    if (config.appType === 'edge') {
-        edgeSourceType.value = config.sourceType || 'url';
-        edgeUrl.value = config.url || edgeUrl.value || 'https://www.microsoft.com';
-        edgeKioskType.value = config.kioskType || 'fullscreen';
-        updateAppTypeUI();
-        updateEdgeSourceUI();
-        updatePreview();
+    if (state.mode === 'multi') {
+        hint.textContent = 'Multi-App: Allows multiple apps with custom Start menu';
         return;
     }
 
-    win32Path.value = config.path || '';
-    win32Args.value = config.args || '';
-
-    updateAppTypeUI();
-    updatePreview();
-}
-
-function applyExampleConfig(example) {
-    switch (example) {
-        case 'lobbyEdge':
-            loadPreset('edgeFullscreen');
-            dom.get('configName').value = 'Lobby-Edge';
-            dom.get('edgeUrl').value = dom.get('edgeUrl').value || 'https://www.microsoft.com';
-            updatePreview();
-            pulseTab('application');
-            switchTab('application');
-            return;
-        case 'receptionMulti':
-            loadPreset('multiApp');
-            dom.get('configName').value = 'Reception-Kiosk';
-            addExamplePins(['%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe', 'Microsoft.WindowsCalculator_8wekyb3d8bbwe!App']);
-            updatePreview();
-            pulseTab('startmenu');
-            switchTab('startmenu');
-            return;
-        case 'classroomRestricted':
-            setMode('restricted');
-            setAccountType('group');
-            generateGuid();
-            dom.get('configName').value = 'Classroom-Restricted';
-            dom.get('groupType').value = 'LocalGroup';
-            dom.get('groupName').value = 'KioskUsers';
-            state.allowedApps = [];
-            state.startPins = [];
-            state.autoLaunchApp = null;
-            addCommonApp('edge');
-            addCommonApp('calculator');
-            dom.get('showTaskbar').checked = true;
-            dom.get('fileExplorerAccess').value = 'downloads';
-            addExamplePins(['%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe', 'Microsoft.WindowsCalculator_8wekyb3d8bbwe!App']);
-            updatePreview();
-            pulseTab('application');
-            switchTab('application');
-            return;
-        default:
-            return;
-    }
-}
-
-function addExamplePins(values) {
-    values.forEach(value => {
-        const index = state.allowedApps.findIndex(app => app.value === value);
-        if (index >= 0) {
-            pinAllowedToStart(index);
-        }
-    });
+    hint.textContent = 'Restricted User: Desktop with limited apps, supports user groups';
 }
 
 function updateEdgeSourceUI() {
@@ -1912,13 +1843,11 @@ function updateProgressRail() {
         setup: getSetupStatus(),
         apps: getAppsStatus(),
         pins: getPinsStatus(),
-        system: 'optional',
         export: getExportStatus()
     };
     const hiddenSteps = new Set();
     if (state.mode === 'single') {
         hiddenSteps.add('pins');
-        hiddenSteps.add('system');
     }
 
     rail.querySelectorAll('.progress-step').forEach(step => {
@@ -2007,6 +1936,9 @@ function updatePreview() {
     dom.get('previewAllowedApps').textContent = String(state.allowedApps.length);
     dom.get('previewStartPins').textContent = String(state.startPins.length);
     dom.get('previewToolbarPins').textContent = String(state.taskbarPins.length);
+    dom.get('previewShowTaskbar').textContent = dom.get('showTaskbar').checked ? 'Enabled' : 'Hidden';
+    dom.get('previewFileExplorer').textContent = dom.get('fileExplorerAccess')?.selectedOptions?.[0]?.textContent || 'Unknown';
+    dom.get('previewAutoLogon').textContent = state.accountType === 'auto' ? 'Enabled' : 'Disabled';
     dom.get('previewGeneratedDate').textContent = generatedAt.toLocaleString();
     dom.get('xmlPreview').textContent = xml;
     updateExportAvailability();
@@ -3586,6 +3518,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateGuid();
     initCallouts();
     updateTabVisibility();
+    updateKioskModeHint();
     updatePreview();
     updateEdgeTileSourceUI();
     updatePinTargetPresets();
