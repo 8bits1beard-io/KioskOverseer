@@ -31,7 +31,7 @@ Build Windows Assigned Access (kiosk) XML without hand-editing. Configure modes,
 
 ## Requirements
 
-- **Windows:** 10/11 Pro, Enterprise, or Education
+- **Windows:** 11 Pro, Enterprise, or Education
 - **Browser:** Any modern browser (Edge, Chrome, Firefox)
 - **Deployment:** Intune (OMA-URI), PowerShell, or PPKG
 

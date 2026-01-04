@@ -2,7 +2,7 @@
 
 Technical reference for Kiosk Overseer.
 
-**Note:** Local use should be served from a web server (not `file://`) so preset JSON loads correctly.
+**Note:** Local use should be served from a web server (not `file://`) so preset JSON loads correctly. Windows 11 is required.
 
 ---
 
@@ -27,7 +27,7 @@ Technical reference for Kiosk Overseer.
 
 1. Select **Multi-App** mode
 2. Add allowed applications:
-   - Use quick-add buttons for 50+ common apps (browsers, Office, utilities)
+   - Use Common Apps buttons or add manually
    - Manual entry: Path (.exe) for Win32 apps, AUMID for UWP apps
 3. Configure auto-launch (optional):
    - Select an app to launch automatically at sign-in
@@ -37,11 +37,8 @@ Technical reference for Kiosk Overseer.
    - Each pin needs: Name, Target path, optional arguments/icon
    - Icon files must exist on the target device; the tool creates shortcuts but does not deploy icons
    - Use the actions next to Allowed Apps to pin to Start/Taskbar or add Edge site tiles
-5. Configure pinned items:
-   - **Taskbar Layout (optional)**: Set taskbar pins; shortcut icon paths must exist on the target device
-6. Configure system restrictions:
-   - **Taskbar**: Show or hide
-   - **File Explorer**: No access, Downloads only, Removable drives, or No restriction
+5. Configure taskbar pins (optional): shortcut icon paths must exist on the target device
+6. Configure **Taskbar** and **File Explorer** settings in Setup
 7. Configure account (Auto-logon or Existing Account)
 8. Export
 
@@ -52,8 +49,8 @@ Use this mode when you need to apply the same restricted desktop to multiple use
 1. Select **Restricted User** mode
 2. Add allowed applications (same as Multi-App)
 3. Add Start menu pins (same as Multi-App)
-4. Configure pinned items (same as Multi-App)
-5. Configure system restrictions (same as Multi-App)
+4. Configure taskbar pins (optional)
+5. Configure **Taskbar** and **File Explorer** settings in Setup
 6. Choose account type:
    - **User Group** — Apply to members of a specific group
      - Local Group: `KioskUsers`
@@ -128,7 +125,7 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
 | Kiosk not applying after reboot | Invalid XML or insufficient privileges | Validate XML in tool; ensure script ran as SYSTEM |
 | Configuration partially applied | XML namespace mismatch | Regenerate XML; check Windows version compatibility |
 | Start menu pins not appearing | Shortcut file missing or invalid path | Verify shortcuts exist in the Start Menu Programs folder and match paths in StartPins JSON; use the deploy or shortcut-only script to auto-create Start/Taskbar shortcuts |
-| Edge not launching in kiosk mode | Missing Edge components in allowed apps | Add Edge via preset button (includes msedge.exe, msedge_proxy.exe, and the Edge packaged app ID) |
+| Edge not launching in kiosk mode | Missing Edge components in allowed apps | Add Edge via Common Apps or include msedge.exe, msedge_proxy.exe, and the Edge packaged app ID manually |
 | Auto-launch app not starting | App not in AllowedApps list | Ensure the auto-launch app is also added to the allowed applications list |
 | SYSTEM context check fails | Script not running as SYSTEM | Use `psexec -i -s` to run PowerShell as SYSTEM |
 | "Unsupported edition" error | Windows Home edition | Kiosk mode requires Pro, Enterprise, or Education |
