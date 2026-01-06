@@ -324,6 +324,16 @@
             z-index: 3;
         }
 
+        .console-output {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 120px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
         .prompt-line {
             font-size: 1.2rem;
             letter-spacing: 2px;
@@ -352,6 +362,19 @@
 
         .prompt-input::placeholder {
             color: rgba(124, 255, 107, 0.5);
+        }
+
+        .console-row {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .console-row.error {
+            color: #ffb347;
+        }
+
+        .console-row.success {
+            color: #eaffd3;
         }
 
         .sr-only {
@@ -561,13 +584,13 @@
                 </ul>
                 <div class="game-hint">TYPE GAME NAME TO EXECUTE</div>
             </div>
+            <div class="console-output" id="consoleOutput" aria-live="polite" aria-atomic="false"></div>
             <form class="prompt-line" id="commandForm" autocomplete="off">
                 <label class="sr-only" for="commandInput">Command</label>
                 <span class="prompt-label">&gt;</span>
                 <input type="text" id="commandInput" class="prompt-input" spellcheck="false" autocomplete="off" autocapitalize="characters" placeholder="ENTER COMMAND">
                 <span class="cursor" aria-hidden="true">&nbsp;</span>
             </form>
-            <div class="status" id="status"></div>
         </div>
     </div>
     
@@ -579,12 +602,11 @@
         let joshuaScore = 0;
         let drawScore = 0;
         
-        const statusDisplay = document.getElementById('status');
+        const consoleOutput = document.getElementById('consoleOutput');
         const cells = document.querySelectorAll('.cell');
         const commandForm = document.getElementById('commandForm');
         const commandInput = document.getElementById('commandInput');
         const gameContainer = document.getElementById('gameContainer');
-        const helloAudio = new Audio('404/falken_hello-joshua.wav');
         const winAudio = new Audio('404/a-good-game-of-chess.wav');
         const drawAudio = new Audio('404/strange-game-the-only-winning-move-is-not-to-play.wav');
         const joshuaMessages = [
@@ -608,6 +630,15 @@
             [2, 4, 6]
         ];
         
+        function appendConsoleLine(text, tone) {
+            if (!consoleOutput) return;
+            const line = document.createElement('div');
+            line.className = `console-row${tone ? ` ${tone}` : ''}`;
+            line.textContent = text;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
         function handleCellClick(e) {
             const cell = e.target;
             const index = parseInt(cell.getAttribute('data-index'));
@@ -620,7 +651,7 @@
             
             if (gameActive) {
                 currentPlayer = 'O';
-                statusDisplay.textContent = joshuaMessages[Math.floor(Math.random() * joshuaMessages.length)];
+                appendConsoleLine(joshuaMessages[Math.floor(Math.random() * joshuaMessages.length)]);
                 setTimeout(() => {
                     joshuaMove();
                 }, 1000);
@@ -644,7 +675,6 @@
                 makeMove(bestMove, 'O');
                 if (gameActive) {
                     currentPlayer = 'X';
-                    statusDisplay.textContent = "YOUR MOVE, PROFESSOR";
                 }
             }
         }
@@ -713,11 +743,11 @@
                 highlightWinningCells(winningCombination);
                 
                 if (winner === 'X') {
-                    statusDisplay.textContent = "IMPOSSIBLE! YOU HAVE WON";
+                    appendConsoleLine("IMPOSSIBLE! YOU HAVE WON", "success");
                     humanScore++;
                     document.getElementById('human-score').textContent = humanScore;
                 } else {
-                    statusDisplay.textContent = "JOSHUA WINS. AS EXPECTED";
+                    appendConsoleLine("JOSHUA WINS. AS EXPECTED", "error");
                     playAudio(winAudio);
                     joshuaScore++;
                     document.getElementById('joshua-score').textContent = joshuaScore;
@@ -727,7 +757,7 @@
             
             if (!board.includes('')) {
                 gameActive = false;
-                statusDisplay.textContent = "A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY";
+                appendConsoleLine("A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY");
                 playAudio(drawAudio);
                 drawScore++;
                 document.getElementById('draw-score').textContent = drawScore;
@@ -762,16 +792,16 @@
                     gameContainer.classList.remove('hidden');
                 }
                 resetGame();
-                statusDisplay.textContent = "GAME STARTED: GLOBAL THERMONUCLEAR WAR";
+                appendConsoleLine("GAME STARTED: GLOBAL THERMONUCLEAR WAR", "success");
                 return;
             }
 
             if (command === "FALKEN'S MAZE" || command === "CHECKERS") {
-                statusDisplay.textContent = "DISK ERROR: GAME NOT FOUND";
+                appendConsoleLine("DISK ERROR: GAME NOT FOUND", "error");
                 return;
             }
 
-            statusDisplay.textContent = "SYNTAX ERROR";
+            appendConsoleLine("SYNTAX ERROR", "error");
         }
         
         function resetGame() {
@@ -834,13 +864,10 @@
             }
         }
         
-        // Play hello audio, then speak after a short delay
+        // Speak after a short delay when page loads
         setTimeout(() => {
-            playAudio(helloAudio);
-            setTimeout(() => {
-                speakGreeting();
-            }, 1000);
-        }, 200);
+            speakGreeting();
+        }, 1500);
         
         // Add some random flicker effect
         setInterval(() => {
