@@ -3527,6 +3527,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'KeyB', 'KeyA'
     ];
     let konamiIndex = 0;
+    let easterEggBuffer = '';
+    const easterEggPhrase = 'hello joshua';
     document.addEventListener('keydown', (event) => {
         const expectedKey = konamiSequence[konamiIndex];
         if (event.code === expectedKey) {
@@ -3535,9 +3537,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = 'https://hirejoshua.com';
                 konamiIndex = 0;
             }
-            return;
+        } else {
+            konamiIndex = event.code === konamiSequence[0] ? 1 : 0;
         }
-        konamiIndex = event.code === konamiSequence[0] ? 1 : 0;
+
+        if (event.key && event.key.length === 1) {
+            easterEggBuffer += event.key.toLowerCase();
+            if (easterEggBuffer.length > easterEggPhrase.length) {
+                easterEggBuffer = easterEggBuffer.slice(-easterEggPhrase.length);
+            }
+            if (easterEggBuffer === easterEggPhrase) {
+                window.location.href = '404.html';
+                easterEggBuffer = '';
+            }
+        }
     });
 
     document.addEventListener('click', (event) => {
