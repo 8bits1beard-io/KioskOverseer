@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'">
+    <title>404 - SHALL WE PLAY A GAME?</title>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff41">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="JW 404">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <style>
+        /* Self-hosted VT323 */
+        /* vietnamese */
+        @font-face {
+            font-family: 'VT323';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(assets/fonts/pxiKyp0ihIEF2isQFJXGdg.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+        /* latin-ext */
+        @font-face {
+            font-family: 'VT323';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(assets/fonts/pxiKyp0ihIEF2isRFJXGdg.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        /* latin */
+        @font-face {
+            font-family: 'VT323';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(assets/fonts/pxiKyp0ihIEF2isfFJU.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #000;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 65, 0.03) 0px,
+                transparent 1px,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 3px
+            );
+            pointer-events: none;
+            animation: scanlines 8s linear infinite;
+        }
+        
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+        
+        .terminal {
+            background: radial-gradient(ellipse at center, #001a0a 0%, #000 100%);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 65, 0.5),
+                inset 0 0 40px rgba(0, 255, 65, 0.1);
+            position: relative;
+            animation: flicker 0.15s infinite;
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41; }
+            to { text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41; }
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+        
+        .error-code {
+            font-size: 72px;
+            margin-bottom: 20px;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .joshua-text {
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+            animation: typewriter 3s steps(30) 1s forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #00ff41;
+            max-width: 0;
+        }
+        
+        @keyframes typewriter {
+            to { max-width: 100%; }
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+        }
+        
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #00ff41;
+            background: rgba(0, 20, 10, 0.8);
+            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .cell:hover:not(.taken) {
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        
+        .cell.winner {
+            animation: winPulse 0.5s infinite;
+            background: rgba(0, 255, 65, 0.2);
+        }
+        
+        @keyframes winPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.8); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 65, 1); }
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        button {
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            padding: 10px 30px;
+            background: transparent;
+            color: #00ff41;
+            border: 2px solid #00ff41;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        button:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
+        }
+        
+        .status {
+            font-size: 28px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 35px;
+        }
+        
+        .score {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #00ff41;
+            background: rgba(0, 255, 65, 0.05);
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: 36px;
+        }
+        
+        .back-link {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .back-link a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 20px;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        
+        .back-link a:hover {
+            border-bottom-color: #00ff41;
+        }
+        
+        .typing-cursor {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="header">
+            <div class="error-code">404</div>
+            <h1>GREETINGS PROFESSOR FALKEN</h1>
+        </div>
+        
+        <div class="joshua-text" id="joshua-message">SHALL WE PLAY A GAME?</div>
+        
+        <div class="game-container">
+            <div class="status" id="status">YOUR MOVE, PROFESSOR</div>
+            
+            <div class="game-board" id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            
+            <div class="score">
+                <div class="score-item">
+                    <div class="score-label">HUMAN</div>
+                    <div class="score-value" id="human-score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">JOSHUA</div>
+                    <div class="score-value" id="joshua-score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">DRAWS</div>
+                    <div class="score-value" id="draw-score">0</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button onclick="resetGame()">NEW GAME</button>
+                <button onclick="resetScores()">RESET SCORES</button>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let humanScore = 0;
+        let joshuaScore = 0;
+        let drawScore = 0;
+        
+        const statusDisplay = document.getElementById('status');
+        const cells = document.querySelectorAll('.cell');
+        const joshuaMessages = [
+            "INTERESTING MOVE",
+            "CALCULATING OPTIMAL STRATEGY",
+            "THE ONLY WINNING MOVE IS NOT TO PLAY",
+            "ANALYZING PATTERNS",
+            "PROCESSING...",
+            "FASCINATING",
+            "STRATEGIC CALCULATIONS COMPLETE"
+        ];
+        
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+        
+        function handleCellClick(e) {
+            const cell = e.target;
+            const index = parseInt(cell.getAttribute('data-index'));
+            
+            if (board[index] !== '' || !gameActive || currentPlayer !== 'X') {
+                return;
+            }
+            
+            makeMove(index, 'X');
+            
+            if (gameActive) {
+                currentPlayer = 'O';
+                statusDisplay.textContent = joshuaMessages[Math.floor(Math.random() * joshuaMessages.length)];
+                setTimeout(() => {
+                    joshuaMove();
+                }, 1000);
+            }
+        }
+        
+        function makeMove(index, player) {
+            board[index] = player;
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            cell.textContent = player;
+            cell.classList.add('taken');
+            
+            checkResult();
+        }
+        
+        function joshuaMove() {
+            if (!gameActive) return;
+            
+            const bestMove = getBestMove();
+            if (bestMove !== -1) {
+                makeMove(bestMove, 'O');
+                if (gameActive) {
+                    currentPlayer = 'X';
+                    statusDisplay.textContent = "YOUR MOVE, PROFESSOR";
+                }
+            }
+        }
+        
+        function getBestMove() {
+            // Try to win
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === '') {
+                    board[i] = 'O';
+                    if (checkWin('O')) {
+                        board[i] = '';
+                        return i;
+                    }
+                    board[i] = '';
+                }
+            }
+            
+            // Block human from winning
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === '') {
+                    board[i] = 'X';
+                    if (checkWin('X')) {
+                        board[i] = '';
+                        return i;
+                    }
+                    board[i] = '';
+                }
+            }
+            
+            // Take center
+            if (board[4] === '') return 4;
+            
+            // Take corners
+            const corners = [0, 2, 6, 8];
+            const availableCorners = corners.filter(i => board[i] === '');
+            if (availableCorners.length > 0) {
+                return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+            }
+            
+            // Take any available space
+            const available = board.map((cell, index) => cell === '' ? index : null).filter(i => i !== null);
+            return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : -1;
+        }
+        
+        function checkWin(player) {
+            return winningConditions.some(condition => {
+                return condition.every(index => board[index] === player);
+            });
+        }
+        
+        function checkResult() {
+            let winningCombination = null;
+            let winner = null;
+            
+            for (let condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    winner = board[a];
+                    winningCombination = condition;
+                    break;
+                }
+            }
+            
+            if (winner) {
+                gameActive = false;
+                highlightWinningCells(winningCombination);
+                
+                if (winner === 'X') {
+                    statusDisplay.textContent = "IMPOSSIBLE! YOU HAVE WON";
+                    humanScore++;
+                    document.getElementById('human-score').textContent = humanScore;
+                } else {
+                    statusDisplay.textContent = "JOSHUA WINS. AS EXPECTED";
+                    joshuaScore++;
+                    document.getElementById('joshua-score').textContent = joshuaScore;
+                }
+                return;
+            }
+            
+            if (!board.includes('')) {
+                gameActive = false;
+                statusDisplay.textContent = "A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY";
+                drawScore++;
+                document.getElementById('draw-score').textContent = drawScore;
+            }
+        }
+        
+        function highlightWinningCells(combination) {
+            combination.forEach(index => {
+                document.querySelector(`[data-index="${index}"]`).classList.add('winner');
+            });
+        }
+        
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            statusDisplay.textContent = "YOUR MOVE, PROFESSOR";
+            
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('taken', 'winner');
+            });
+        }
+        
+        function resetScores() {
+            humanScore = 0;
+            joshuaScore = 0;
+            drawScore = 0;
+            document.getElementById('human-score').textContent = '0';
+            document.getElementById('joshua-score').textContent = '0';
+            document.getElementById('draw-score').textContent = '0';
+            resetGame();
+        }
+        
+        // Initialize game
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+        });
+        
+        // Add text-to-speech for "Greetings Professor Falken. Shall we play a game?"
+        let hasSpoken = false;
+        
+        function speakGreeting() {
+            if ('speechSynthesis' in window && !hasSpoken) {
+                hasSpoken = true;
+                const utterance = new SpeechSynthesisUtterance('Greetings Professor Falken. Shall we play a game?');
+                utterance.rate = 0.8;
+                utterance.pitch = 0.7;
+                utterance.volume = 0.8;
+                
+                // Try to use a robotic/computer-like voice if available
+                const voices = speechSynthesis.getVoices();
+                const preferredVoices = voices.filter(voice => 
+                    voice.name.toLowerCase().includes('microsoft') || 
+                    voice.name.toLowerCase().includes('google') ||
+                    voice.name.toLowerCase().includes('male')
+                );
+                
+                if (preferredVoices.length > 0) {
+                    utterance.voice = preferredVoices[0];
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Speak after a short delay when page loads
+        setTimeout(() => {
+            speakGreeting();
+        }, 1500);
+        
+        // Add some random flicker effect
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                document.body.style.opacity = '0.95';
+                setTimeout(() => {
+                    document.body.style.opacity = '1';
+                }, 50);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
