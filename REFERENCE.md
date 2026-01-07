@@ -96,6 +96,7 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
    ```
 3. The script performs:
    - Pre-flight checks (Windows edition, SYSTEM context via SID S-1-5-18, WMI availability)
+   - Enables process creation auditing, command-line capture, and sets Security log size to 512MB (best effort)
    - Creates shortcuts in `%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\` for Start and Taskbar pins
    - Applies configuration via WMI (`MDM_AssignedAccess`)
    - Generates NDJSON log file with timestamps and execution details in `%ProgramData%\\KioskOverseer\\Logs`

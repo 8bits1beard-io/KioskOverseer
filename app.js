@@ -2204,6 +2204,31 @@ Write-Log -Action "Pre-flight checks passed" -Status "Success" -Message "Proceed
 try {
     Write-Log -Action "Starting deployment" -Status "Info" -Message "Target: $env:COMPUTERNAME"
 
+    # Enable audit logging for process creation and command-line capture
+    Write-Log -Action "Enable process creation auditing" -Status "Info"
+    try {
+        auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable | Out-Null
+        Write-Log -Action "Process creation auditing enabled" -Status "Success"
+    } catch {
+        Write-Log -Action "Process creation auditing failed" -Status "Warning" -Message $_.Exception.Message
+    }
+
+    Write-Log -Action "Enable command-line capture" -Status "Info"
+    try {
+        reg add "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f | Out-Null
+        Write-Log -Action "Command-line capture enabled" -Status "Success"
+    } catch {
+        Write-Log -Action "Command-line capture failed" -Status "Warning" -Message $_.Exception.Message
+    }
+
+    Write-Log -Action "Increase Security log size" -Status "Info" -Message "Setting to 512MB"
+    try {
+        wevtutil sl Security /ms:536870912 | Out-Null
+        Write-Log -Action "Security log size updated" -Status "Success"
+    } catch {
+        Write-Log -Action "Security log size update failed" -Status "Warning" -Message $_.Exception.Message
+    }
+
     # Create Start Menu shortcuts
     if ($shortcuts.Count -gt 0) {
         Write-Log -Action "Creating Start Menu shortcuts" -Status "Info" -Message "$($shortcuts.Count) shortcut(s) to create"
