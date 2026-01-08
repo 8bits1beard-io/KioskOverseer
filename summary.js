@@ -148,6 +148,9 @@ function updateSummary() {
         ? 'N/A'
         : `Start: ${state.startPins.length} / Taskbar: ${state.taskbarPins.length}`;
     const showTaskbar = dom.get('showTaskbar')?.checked;
+    const showTaskbarValue = state.mode === 'single'
+        ? 'N/A (single-app mode)'
+        : (showTaskbar ? 'Enabled' : 'Hidden');
     const fileExplorerLabel = dom.get('fileExplorerAccess')?.selectedOptions?.[0]?.textContent || 'Unknown';
 
     summaryOverview.innerHTML = [
@@ -156,7 +159,7 @@ function updateSummary() {
         { label: 'Account', value: escapeXml(accountSummary) },
         { label: 'Allowed Apps', value: escapeXml(allowedAppsValue) },
         { label: 'Pins', value: escapeXml(pinsValue) },
-        { label: 'Show Taskbar', value: showTaskbar ? 'Enabled' : 'Hidden' },
+        { label: 'Show Taskbar', value: showTaskbarValue },
         { label: 'File Explorer', value: escapeXml(fileExplorerLabel) },
         { label: 'Export Status', value: escapeXml(exportStatus) }
     ].map(row => `
@@ -211,7 +214,7 @@ function updateSummary() {
         <details class="summary-panel">
             <summary>System Access</summary>
             <div class="summary-panel-body">
-                <div><strong>Show Taskbar:</strong> ${showTaskbar ? 'Enabled' : 'Hidden'}</div>
+                <div><strong>Show Taskbar:</strong> ${escapeXml(showTaskbarValue)}</div>
                 <div><strong>File Explorer:</strong> ${escapeXml(fileExplorerLabel)}</div>
             </div>
         </details>
