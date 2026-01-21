@@ -78,6 +78,10 @@
                             </label>
                             <input type="text" id="configName" placeholder="e.g., Lobby-Kiosk, Reception-PC" data-change="updatePreview" aria-describedby="configName-tooltip">
                         </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label for="configAuthor" style="font-size: 0.85rem; color: var(--text-secondary);">Author (optional)</label>
+                            <input type="text" id="configAuthor" placeholder="e.g., John Smith">
+                        </div>
                         <div class="form-group">
                             <label for="profileId" class="with-tooltip">
                                 Profile GUID
@@ -466,6 +470,7 @@
                                         <button type="button" class="btn-secondary btn-small" data-action="addCommonApp" data-arg="edge">Edge</button>
                                         <button type="button" class="btn-secondary btn-small" data-action="addCommonApp" data-arg="chrome">Chrome</button>
                                         <button type="button" class="btn-secondary btn-small" data-action="addCommonApp" data-arg="firefox">Firefox</button>
+                                        <button type="button" class="btn-secondary btn-small" data-action="addCommonApp" data-arg="brave">Brave</button>
                                     </div>
                                     <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px;">
                                         <strong style="width: 100%; font-size: 0.8rem; color: var(--text-secondary);">System Utilities:</strong>
@@ -643,7 +648,7 @@
                                         <input type="text" id="pinArgs" placeholder="e.g., --kiosk https://example.com --edge-kiosk-type=fullscreen" style="width: 100%;">
                                     </div>
                                     <div id="pinEdgeArgsGroup" class="edge-args-group hidden" aria-hidden="true">
-                                        <label style="font-size: 0.75rem; color: var(--text-secondary);">Edge Options (optional)</label>
+                                        <label style="font-size: 0.75rem; color: var(--text-secondary);">Kiosk Mode (optional)</label>
                                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                             <div style="flex: 1; min-width: 160px;">
                                                 <select id="pinEdgeArgsMode" data-change="updatePinEdgeArgsModeUI" style="width: 100%;">
@@ -759,14 +764,8 @@
                                                 <input type="text" id="editPinArgs" style="width: 100%;">
                                             </div>
                                         </div>
-                                        <div style="margin-top: 8px;">
-                                            <label for="editPinTargetPreset" style="font-size: 0.75rem; color: var(--text-secondary);">Use Allowed App</label>
-                                            <select id="editPinTargetPreset" data-change="applyEditPinTargetPreset" style="width: 100%;">
-                                                <option value="">Select allowed app</option>
-                                            </select>
-                                        </div>
                                         <div id="editPinEdgeArgsGroup" class="edge-args-group hidden" aria-hidden="true" style="margin-top: 8px;">
-                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Edge Options (optional)</label>
+                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Kiosk Mode (optional)</label>
                                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                                 <div style="flex: 1; min-width: 160px;">
                                                     <select id="editPinEdgeArgsMode" data-change="updateEditPinEdgeArgsModeUI" style="width: 100%;">
@@ -807,8 +806,8 @@
                                             </div>
                                         </div>
                                         <div style="margin-top: 8px;">
-                                            <label for="editPinShortcutPath" style="font-size: 0.75rem; color: var(--text-secondary);">Shortcut Path (.lnk)</label>
-                                            <input type="text" id="editPinShortcutPath" style="width: 100%;">
+                                            <label for="editPinShortcutPath" style="font-size: 0.75rem; color: var(--text-secondary);">System Shortcut Path (optional)</label>
+                                            <input type="text" id="editPinShortcutPath" style="width: 100%;" placeholder="e.g. %ProgramData%\Microsoft\Windows\Start Menu\Programs\MyApp.lnk" title="Path to an existing .lnk shortcut file on the system. Use this instead of Target Path to reference a pre-existing Start Menu shortcut.">
                                         </div>
                                     </div>
                                     <div id="editPackagedFields" class="hidden">
@@ -894,7 +893,7 @@
                                             </select>
                                         </div>
                                         <div id="taskbarPinEdgeArgsGroup" class="edge-args-group hidden" aria-hidden="true" style="margin-top: 8px;">
-                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Edge Options (optional)</label>
+                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Kiosk Mode (optional)</label>
                                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                                 <div style="flex: 1; min-width: 160px;">
                                                     <select id="taskbarPinEdgeArgsMode" data-change="updateTaskbarPinEdgeArgsModeUI" style="width: 100%;">
@@ -980,14 +979,8 @@
                                             <label for="editTaskbarPinIconPath" style="font-size: 0.75rem; color: var(--text-secondary);">Icon Path (optional, shortcuts only)</label>
                                             <input type="text" id="editTaskbarPinIconPath" style="width: 100%;">
                                         </div>
-                                        <div style="margin-top: 8px;">
-                                            <label for="editTaskbarPinTargetPreset" style="font-size: 0.75rem; color: var(--text-secondary);">Use Allowed App</label>
-                                            <select id="editTaskbarPinTargetPreset" data-change="applyEditTaskbarPinTargetPreset" style="width: 100%;">
-                                                <option value="">Select allowed app</option>
-                                            </select>
-                                        </div>
                                         <div id="editTaskbarEdgeArgsGroup" class="edge-args-group hidden" aria-hidden="true" style="margin-top: 8px;">
-                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Edge Options (optional)</label>
+                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Kiosk Mode (optional)</label>
                                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                                 <div style="flex: 1; min-width: 160px;">
                                                     <select id="editTaskbarEdgeArgsMode" data-change="updateEditTaskbarEdgeArgsModeUI" style="width: 100%;">
@@ -1315,11 +1308,14 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.0.0"></script>
-    <script src="state.js?v=1.0.0"></script>
-    <script src="helpers.js?v=1.0.0"></script>
-    <script src="xml.js?v=1.0.0"></script>
-    <script src="validation.js?v=1.0.0"></script>
-    <script src="app.js?v=1.0.0"></script>
+    <script src="dom.js?v=1.2.0"></script>
+    <script src="state.js?v=1.2.0"></script>
+    <script src="helpers.js?v=1.2.0"></script>
+    <script src="xml.js?v=1.2.0"></script>
+    <script src="validation.js?v=1.2.0"></script>
+    <script src="app.js?v=1.2.0"></script>
+    <script src="apps.js?v=1.2.0"></script>
+    <script src="pins.js?v=1.2.0"></script>
+    <script src="config.js?v=1.2.0"></script>
 </body>
 </html>

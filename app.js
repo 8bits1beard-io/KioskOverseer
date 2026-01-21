@@ -724,6 +724,39 @@ function buildEdgeArgsFromUi(prefix, options = {}) {
     return buildEdgeKioskArgs(url, kioskType, idleTimeout);
 }
 
+function buildBrowserArgsFromUi(prefix, targetValue, options = {}) {
+    const { suppressAlert = false } = options;
+    const mode = dom.get(`${prefix}EdgeArgsMode`)?.value || 'standard';
+    if (mode === 'standard') {
+        return '';
+    }
+    const sourceType = dom.get(`${prefix}EdgeArgsSourceType`)?.value || 'url';
+    const url = buildLaunchUrl(
+        sourceType,
+        dom.get(`${prefix}EdgeArgsUrl`)?.value.trim(),
+        dom.get(`${prefix}EdgeArgsFilePath`)?.value,
+        ''
+    );
+    if (!url) {
+        if (!suppressAlert) {
+            alert('Kiosk mode requires a URL or local file path.');
+        }
+        return '';
+    }
+    // Chrome/Brave have simpler kiosk args (no public-browsing or idle timeout)
+    if (isChromeApp(targetValue) || isBraveApp(targetValue)) {
+        return `--kiosk ${url} --no-first-run`;
+    }
+    // Firefox has basic kiosk support
+    if (isFirefoxApp(targetValue)) {
+        return `--kiosk ${url}`;
+    }
+    // Edge has full kiosk options
+    const kioskType = mode === 'kioskPublic' ? 'public-browsing' : 'fullscreen';
+    const idleTimeout = parseInt(dom.get(`${prefix}EdgeArgsIdle`)?.value, 10) || 0;
+    return buildEdgeKioskArgs(url, kioskType, idleTimeout);
+}
+
 function syncEdgeArgsField(prefix) {
     const fieldMap = {
         pin: ['pinTarget', 'pinArgs'],
@@ -736,21 +769,21 @@ function syncEdgeArgsField(prefix) {
     const targetInput = dom.get(ids[0]);
     const argsInput = dom.get(ids[1]);
     if (!targetInput || !argsInput) return;
-    if (!isEdgeApp(targetInput.value)) {
+    if (!isBrowserWithKioskSupport(targetInput.value)) {
         const mode = dom.get(`${prefix}EdgeArgsMode`)?.value || 'standard';
         if (mode !== 'standard') {
             argsInput.value = '';
         }
         return;
     }
-    argsInput.value = buildEdgeArgsFromUi(prefix, { suppressAlert: true });
+    argsInput.value = buildBrowserArgsFromUi(prefix, targetInput.value, { suppressAlert: true });
 }
 
 function updateEdgeArgsVisibility(prefix, targetInputId, groupId) {
     const targetInput = dom.get(targetInputId);
     const group = dom.get(groupId);
     if (!targetInput || !group) return;
-    const show = isEdgeApp(targetInput.value);
+    const show = isBrowserWithKioskSupport(targetInput.value);
     group.classList.toggle('hidden', !show);
     group.setAttribute('aria-hidden', !show);
 }
@@ -787,11 +820,11 @@ function applyEdgeArgs(prefix, targetInputId, argsInputId) {
     const targetInput = dom.get(targetInputId);
     const argsInput = dom.get(argsInputId);
     if (!targetInput || !argsInput) return;
-    if (!isEdgeApp(targetInput.value)) {
-        alert('Edge options apply only when the target is msedge.exe.');
+    if (!isBrowserWithKioskSupport(targetInput.value)) {
+        alert('Kiosk options apply only to Edge or Chrome.');
         return;
     }
-    const args = buildEdgeArgsFromUi(prefix);
+    const args = buildBrowserArgsFromUi(prefix, targetInput.value);
     if (args) {
         argsInput.value = args;
     }
@@ -1011,8 +1044,6 @@ function moveTaskbarPinDown(index) {
     updatePreview();
 }
 
-let dragPinContext = null;
-
 function handlePinDragStart(event) {
     const item = event.target.closest('.app-item.draggable');
     if (!item || item.getAttribute('draggable') !== 'true') return;
@@ -1077,8 +1108,6 @@ function handlePinDragEnd(event) {
     document.querySelectorAll('.app-item.drag-over').forEach(el => el.classList.remove('drag-over'));
     dragPinContext = null;
 }
-let editingPinIndex = null;
-let editingTaskbarPinIndex = null;
 
 function getEdgeUrl() {
     const sourceType = dom.get('edgeSourceType').value;
@@ -3037,8 +3066,6 @@ function downloadStartLayoutXml() {
 /* ============================================================================
    Config Save / Load
    ============================================================================ */
-const CONFIG_SCHEMA_VERSION = 1;
-let configFileHandle = null;
 
 function getConfigSaveName() {
     const configName = dom.get('configName').value.trim();
@@ -3216,13 +3243,21 @@ function applyConfigSnapshot(payload) {
 
 function generateReadme() {
     const configName = dom.get('configName').value.trim();
+    const configAuthor = dom.get('configAuthor').value.trim();
     const profileId = dom.get('profileId').value || '(not set)';
     const now = new Date().toLocaleString();
+    const currentDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
     const edgeWarningPins = getEdgeShortcutWarningPins();
 
     let readme = `# Kiosk Configuration Summary\n\n`;
     if (configName) {
         readme += `**Configuration:** ${configName}\n\n`;
+    }
+    if (configAuthor) {
+        readme += `**Author:** ${configAuthor}  \n`;
+        readme += `**Date:** ${currentDate}\n\n`;
     }
     readme += `Generated: ${now}\n\n`;
 

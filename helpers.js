@@ -9,6 +9,31 @@ function isEdgeApp(value) {
            lowerValue.includes('edge\\application');
 }
 
+function isChromeApp(value) {
+    if (!value) return false;
+    const lowerValue = value.toLowerCase();
+    return lowerValue.includes('chrome.exe') ||
+           lowerValue.includes('\\chrome\\application');
+}
+
+function isFirefoxApp(value) {
+    if (!value) return false;
+    const lowerValue = value.toLowerCase();
+    return lowerValue.includes('firefox.exe') ||
+           lowerValue.includes('\\mozilla firefox\\');
+}
+
+function isBraveApp(value) {
+    if (!value) return false;
+    const lowerValue = value.toLowerCase();
+    return lowerValue.includes('brave.exe') ||
+           lowerValue.includes('\\bravesoftware\\');
+}
+
+function isBrowserWithKioskSupport(value) {
+    return isEdgeApp(value) || isChromeApp(value) || isFirefoxApp(value) || isBraveApp(value);
+}
+
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).catch(() => {
         const textarea = document.createElement('textarea');
