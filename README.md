@@ -101,10 +101,13 @@ python -m http.server
 
 ```
 ├── index.html          # Entry point and UI structure
-├── app.js              # Core application logic
+├── app.js              # Core application logic and event handling
+├── apps.js             # Allowed apps management
+├── pins.js             # Unified Start menu and Taskbar pin management
+├── config.js           # Configuration save/load/import/export
 ├── xml.js              # AssignedAccess XML generation
 ├── validation.js       # Input validation rules
-├── helpers.js          # Utility functions
+├── helpers.js          # Utility functions and browser detection
 ├── dom.js              # DOM caching
 ├── state.js            # Application state and preset loading
 ├── styles.css          # UI themes and layout

@@ -2,6 +2,23 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.1.0] - 2026-01-21
+
+### Added
+- Kiosk mode support for Chrome, Firefox, and Brave browsers
+- Brave browser added to common app presets
+- Author field with automatic date in configuration metadata
+
+### Changed
+- Refactored codebase into modules (apps.js, pins.js, config.js)
+- Unified Start menu and Taskbar pin management to reduce code duplication
+- Renamed "Edge Options" to "Kiosk Mode" for browser-agnostic labeling
+- Removed redundant "Use Allowed App" dropdown from pin edit panels
+- Improved "System Shortcut Path" field with better labeling and placeholder
+
+### Fixed
+- Content Security Policy updated to allow Cloudflare Insights
+
 ## [1.0.0] - Initial Release
 
 ### Added
