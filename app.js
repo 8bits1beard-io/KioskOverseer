@@ -2221,11 +2221,11 @@ function downloadPowerShell() {
     const xml = generateXml();
 
     // Generate shortcuts JSON for PowerShell
-    // Exclude: UWP apps (packagedAppId - no .lnk needed), system shortcuts (already exist)
+    // Exclude: UWP apps (packagedAppId - no .lnk needed), secondary tiles (Edge URLs - handled via XML), system shortcuts (already exist)
     // Single-app mode doesn't use Start Menu pins or taskbar, so skip shortcuts entirely
     const shortcutsJson = state.mode === 'single' ? '[]' : JSON.stringify(state.startPins
         .concat(state.taskbarPins || [])
-        .filter(p => p.pinType !== 'packagedAppId' && !p.systemShortcut)
+        .filter(p => p.pinType !== 'packagedAppId' && p.pinType !== 'secondaryTile' && !p.systemShortcut)
         .map(p => ({
             Name: p.name || '',
             TargetPath: p.target || '',
@@ -2582,10 +2582,10 @@ function downloadShortcutsScript() {
         : '';
 
     // Generate shortcuts JSON for PowerShell
-    // Exclude: UWP apps (packagedAppId - no .lnk needed), system shortcuts (already exist)
+    // Exclude: UWP apps (packagedAppId - no .lnk needed), secondary tiles (Edge URLs - handled via XML), system shortcuts (already exist)
     const shortcutsJson = JSON.stringify(state.startPins
         .concat(state.taskbarPins || [])
-        .filter(p => p.pinType !== 'packagedAppId' && !p.systemShortcut)
+        .filter(p => p.pinType !== 'packagedAppId' && p.pinType !== 'secondaryTile' && !p.systemShortcut)
         .map(p => ({
             Name: p.name || '',
             TargetPath: p.target || '',
