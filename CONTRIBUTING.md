@@ -1,0 +1,191 @@
+# Contributing to Kiosk Overseer
+
+Thank you for your interest in contributing to Kiosk Overseer! This guide will help you get started.
+
+## Getting Started
+
+### Prerequisites
+- A modern web browser (Edge, Chrome, Firefox)
+- Python 3.x (for local development server) or any static file server
+- Git for version control
+- A text editor or IDE
+
+### Local Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/8bits1beard-io/KioskOverseer.git
+cd KioskOverseer
+
+# Start a local server (required - fetch() won't work with file:// URLs)
+python -m http.server
+
+# Open in browser
+# http://localhost:8000
+```
+
+> **Important:** The app loads presets via `fetch()`, so it must be served from a web server. Opening `index.html` directly as a `file://` URL will not work.
+
+---
+
+## Project Structure
+
+```
+├── index.html          # Entry point, UI structure, inline styles
+├── app.js              # Core application logic, event handlers, exports
+├── xml.js              # AssignedAccess XML generation
+├── validation.js       # Input validation rules
+├── helpers.js          # Utility functions (clipboard, download, escapeXml)
+├── dom.js              # DOM element caching
+├── state.js            # Application state and preset loading
+├── styles.css          # UI themes (Fallout, Fluent) and layout
+├── data/
+│   ├── app-presets.json    # Common Windows application definitions
+│   └── pin-presets.json    # Start menu pin templates
+├── configs/            # Example .kioskoverseer.json configurations
+└── assets/             # Logo, mascot image, self-hosted fonts
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `app.js` | Main application logic, event handlers, export generation |
+| `xml.js` | Generates AssignedAccess XML with proper namespaces |
+| `validation.js` | Validates user input and configuration state |
+| `helpers.js` | Utility functions shared across modules |
+| `state.js` | Application state object and preset loading |
+
+---
+
+## Coding Standards
+
+### JavaScript
+- Plain ES6+ with no framework dependencies
+- Keep functions focused and named by intent (e.g., `updatePreview`, `renderPinList`)
+- Use the existing module pattern (separate files for concerns)
+- No build step required
+
+### HTML/CSS
+- 4-space indentation
+- Use the existing CSS variable system in `styles.css`
+- Prefer theme variables over hard-coded colors
+- Maintain accessibility (ARIA labels, keyboard navigation)
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| DOM IDs | camelCase | `fileExplorerAccess` |
+| Data attributes | kebab-case with prefix | `data-action`, `data-change` |
+| Functions | camelCase, verb-first | `updatePreview()`, `renderPinList()` |
+| CSS classes | kebab-case | `.pin-item`, `.export-button` |
+
+---
+
+## Testing
+
+There is currently no automated test framework. Testing is done manually:
+
+1. **Load the app locally** via `python -m http.server`
+2. **Test each kiosk mode** (Single-App, Multi-App, Restricted User)
+3. **Generate XML** and verify structure
+4. **Test exports** (XML download, PowerShell scripts, config save/load)
+5. **Test validation** (trigger errors, verify messages)
+6. **Test both themes** (Fallout and Fluent)
+
+If you add automated tests, please document the test runner and execution instructions.
+
+---
+
+## Making Changes
+
+### Adding a New App Preset
+
+1. Edit `data/app-presets.json`
+2. Add an entry with the required fields:
+   ```json
+   {
+     "name": "Application Name",
+     "type": "win32",
+     "path": "C:\\Path\\To\\app.exe",
+     "group": "category"
+   }
+   ```
+3. For UWP apps, use `"type": "uwp"` and `"aumid": "..."` instead of `path`
+
+### Adding a New Pin Preset
+
+1. Edit `data/pin-presets.json`
+2. Follow the existing structure for the pin type (desktopAppLink, packagedAppId, secondaryTile)
+
+### Modifying XML Generation
+
+1. Edit `xml.js`
+2. Ensure proper XML escaping using `escapeXml()` from `helpers.js`
+3. Use correct namespace prefixes (rs5, v3, v4, v5) for version-specific features
+4. Test generated XML validates against Windows schemas
+
+---
+
+## Commit Guidelines
+
+Follow the existing commit style:
+
+- **Short, imperative, descriptive** messages
+- Examples:
+  - `Add Fluent theme toggle`
+  - `Fix validation for empty app list`
+  - `Skip shortcut creation in single-app mode`
+
+### Version Bumps
+
+When making UI or JavaScript changes:
+
+1. Update the version query string in `index.html`:
+   ```html
+   <link rel="stylesheet" href="styles.css?v=1.0.0">
+   <script src="app.js?v=1.0.0"></script>
+   ```
+2. Commit with message: `Bump build to 1.0.0`
+
+This ensures the browser cache is invalidated on deploy.
+
+---
+
+## Pull Request Guidelines
+
+When submitting a PR, include:
+
+1. **Summary** of changes (what and why)
+2. **Screenshots** for UI changes
+3. **Testing notes** (what you tested, how)
+4. **Version bump** if assets changed
+
+### PR Checklist
+
+- [ ] Tested locally with `python -m http.server`
+- [ ] Tested all affected kiosk modes
+- [ ] Tested XML export validates
+- [ ] Updated version query strings if needed
+- [ ] No console errors in browser
+
+---
+
+## Deployment
+
+The app is hosted at [kioskoverseer.com](https://kioskoverseer.com).
+
+- Pushes to `main` trigger automatic deployment
+- Use version query strings to bust browser cache
+
+---
+
+## Questions?
+
+Open an issue on GitHub for:
+- Bug reports
+- Feature requests
+- Questions about implementation
+
+Thank you for contributing!
