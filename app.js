@@ -3873,6 +3873,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         runAction(target.dataset.action, target, event);
     });
 
+    document.addEventListener('click', (event) => {
+        const header = event.target.closest('legend.collapsible-header');
+        if (!header) return;
+
+        const content = header.nextElementSibling;
+        if (!content || !content.classList.contains('collapsible-content')) return;
+
+        header.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+    });
+
     document.addEventListener('change', (event) => {
         const target = event.target.closest('[data-change]');
         if (!target) return;
