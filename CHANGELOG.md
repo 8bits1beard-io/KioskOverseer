@@ -2,6 +2,16 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.1.2] - 2026-01-21
+
+### Fixed
+- Secondary tile pins (Edge URLs) no longer cause "missing name or target path" error in PowerShell scripts
+
+## [1.1.1] - 2026-01-21
+
+### Fixed
+- Print Spooler preset now correctly opens Print Queue (was pointing to spoolsv.exe service)
+
 ## [1.1.0] - 2026-01-21
 
 ### Added
