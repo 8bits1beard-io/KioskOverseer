@@ -107,13 +107,40 @@ Kiosk args vary by browser:
 - **CSS classes:** kebab-case (`.pin-item`)
 - **Indentation:** 4 spaces
 
-## Version Bumps
+## Version Bumps - CRITICAL REQUIREMENT
 
-When changing UI or JS, update version query strings in `index.html` to bust browser cache:
+**MANDATORY: After ANY change to HTML, CSS, or JS files, you MUST update ALL version numbers in `index.html`.**
+
+This is NOT optional. Browser caching will break the application if versions are not updated.
+
+### When to Update Versions
+
+Update versions after changes to:
+- HTML structure (`index.html` itself)
+- Any JavaScript file (`*.js`)
+- CSS files (`styles.css`)
+
+### How to Update Versions
+
+**ALWAYS update ALL of these together** - never update just one:
 
 ```html
-<script src="app.js?v=1.1.0"></script>
+<link rel="stylesheet" href="styles.css?v=X.X.X">
+...
+<script src="dom.js?v=X.X.X"></script>
+<script src="state.js?v=X.X.X"></script>
+<script src="helpers.js?v=X.X.X"></script>
+<script src="xml.js?v=X.X.X"></script>
+<script src="validation.js?v=X.X.X"></script>
+<script src="app.js?v=X.X.X"></script>
+<script src="apps.js?v=X.X.X"></script>
+<script src="pins.js?v=X.X.X"></script>
+<script src="config.js?v=X.X.X"></script>
 ```
+
+Increment the patch version (e.g., `1.1.2` → `1.1.3`) for all files in sync.
+
+**Example:** If you modify only `app.js` and `index.html`, you still update ALL 10 version strings from `?v=1.1.2` to `?v=1.1.3`.
 
 ## Data Files
 
