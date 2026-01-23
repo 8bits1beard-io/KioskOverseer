@@ -8,6 +8,8 @@ Kiosk Overseer is a web-based GUI for building Windows 11 Assigned Access (kiosk
 
 **Target:** Windows 11 Pro/Enterprise/Education only (uses v4/v5 XML namespaces not available in Windows 10).
 
+**Live site:** [kioskoverseer.com](https://kioskoverseer.com)
+
 ## Development Commands
 
 ```bash
@@ -21,29 +23,31 @@ No build step, no npm, no framework. Pure vanilla JavaScript served statically.
 
 ## Architecture
 
-### Script Loading Order
+### Script Loading Order (Critical)
 
-Scripts load in this order in `index.html`. **Order matters** - later scripts can override functions from earlier ones:
+Scripts load in this order in `index.html`. **Order matters** - later scripts override functions from earlier ones:
 
 1. `dom.js` - DOM element caching
 2. `state.js` - Central state object, preset loading
 3. `helpers.js` - Utilities (clipboard, download, browser detection)
 4. `xml.js` - AssignedAccess XML generation
 5. `validation.js` - Input validation rules
-6. `app.js` - Core logic, event handlers, UI management
-7. `apps.js` - Allowed apps management (overrides app.js duplicates)
+6. `app.js` - Core UI logic, mode switching, Edge args, exports
+7. `apps.js` - Allowed apps management
 8. `pins.js` - Unified pin management for Start menu and Taskbar
-9. `config.js` - Save/load/import/export functionality
+9. `config.js` - Save/load/import/export + **actionHandlers event delegation**
+
+**Important:** `actionHandlers` (the event dispatch map) lives at the end of `config.js` so it captures references to the correct modular functions. If you add a new action handler, add it to `actionHandlers` in config.js.
 
 ### Module Responsibilities
 
 | File | Purpose |
 |------|---------|
-| `app.js` | Core logic: event delegation, kiosk mode switching, Edge args UI, export generation |
+| `app.js` | Core UI: mode switching, Edge args builder, export generation, progress rail |
 | `apps.js` | Allowed apps CRUD: addAllowedApp, removeApp, renderAppList, auto-launch selection |
-| `pins.js` | Unified pin management using `PIN_LIST_CONFIG` to handle both Start and Taskbar pins |
-| `config.js` | Configuration persistence: buildConfigSnapshot, applyConfigSnapshot, XML import/export |
-| `xml.js` | AssignedAccess XML generation with proper namespace handling (rs5, v3, v4, v5) |
+| `pins.js` | All pin operations for both Start menu and Taskbar (uses `PIN_LIST_CONFIG`) |
+| `config.js` | Configuration persistence + `actionHandlers` event delegation |
+| `xml.js` | AssignedAccess XML generation with namespace handling (rs5, v3, v4, v5) |
 | `validation.js` | Input validation rules, returns error objects with field and message |
 | `helpers.js` | Utilities: clipboard, file download, XML escaping, browser detection |
 | `state.js` | Central `state` object and async preset loading from JSON files |
@@ -78,7 +82,12 @@ state = {
 
 ### Event Delegation Pattern
 
-HTML uses `data-action` and `data-arg` attributes. Single delegated listener in `app.js` dispatches to handler functions based on action name.
+HTML uses `data-action` and `data-arg` attributes. Single delegated listener dispatches to `actionHandlers` (defined at end of config.js).
+
+To add a new action:
+1. Create the function in the appropriate module (apps.js, pins.js, etc.)
+2. Add it to `actionHandlers` in config.js
+3. Use `data-action="functionName"` in HTML
 
 ### Browser Kiosk Support
 
@@ -174,7 +183,8 @@ Manual testing only (no automated test framework):
 2. Test browser kiosk options (Edge, Chrome, Firefox, Brave)
 3. Test pin management (add, edit, reorder, duplicate, remove)
 4. Test all exports (XML, PowerShell, shortcuts, config save/load)
-5. Test XML import functionality
+5. Test configuration save/load functionality
+6. Test both themes (Fallout and Fluent)
 
 ## Edge Kiosk Notes
 
@@ -184,3 +194,23 @@ For Edge secondary tiles in StartPins, include all three in allowed apps:
 - `msedge.exe`
 - `msedge_proxy.exe`
 - `Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe!App`
+
+## Adding New Features
+
+### Adding a New App Preset
+
+Edit `data/app-presets.json`:
+```json
+{
+  "apps": {
+    "myApp": { "type": "path", "value": "C:\\Path\\To\\app.exe" }
+  },
+  "groups": {
+    "myApp": ["myApp"]  // Group apps that should be added together
+  }
+}
+```
+
+### Adding a New Pin Preset
+
+Edit `data/pin-presets.json` following existing structure for pin types: `desktopAppLink`, `packagedAppId`, or `secondaryTile`.

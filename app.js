@@ -652,8 +652,8 @@ function buildBrowserArgsFromUi(prefix, targetValue, options = {}) {
         }
         return '';
     }
-    // Chrome/Brave have simpler kiosk args (no public-browsing or idle timeout)
-    if (isChromeApp(targetValue) || isBraveApp(targetValue)) {
+    // Chrome/Brave/Island have simpler kiosk args (no public-browsing or idle timeout)
+    if (isChromeApp(targetValue) || isBraveApp(targetValue) || isIslandApp(targetValue)) {
         return `--kiosk ${url} --no-first-run`;
     }
     // Firefox has basic kiosk support

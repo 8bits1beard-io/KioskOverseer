@@ -30,8 +30,15 @@ function isBraveApp(value) {
            lowerValue.includes('\\bravesoftware\\');
 }
 
+function isIslandApp(value) {
+    if (!value) return false;
+    const lowerValue = value.toLowerCase();
+    return lowerValue.includes('island.exe') ||
+           lowerValue.includes('\\island\\island\\');
+}
+
 function isBrowserWithKioskSupport(value) {
-    return isEdgeApp(value) || isChromeApp(value) || isFirefoxApp(value) || isBraveApp(value);
+    return isEdgeApp(value) || isChromeApp(value) || isFirefoxApp(value) || isBraveApp(value) || isIslandApp(value);
 }
 
 function copyToClipboard(text) {
@@ -128,6 +135,9 @@ function buildBrowserKioskArgs(browser, url, kioskType) {
         return `--kiosk ${url} --no-first-run${fileAccessFlag}`;
     }
     if (browser === 'brave') {
+        return `--kiosk ${url} --no-first-run${fileAccessFlag}`;
+    }
+    if (browser === 'island') {
         return `--kiosk ${url} --no-first-run${fileAccessFlag}`;
     }
     if (browser === 'firefox') {
