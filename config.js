@@ -284,3 +284,111 @@ function loadPreset(preset) {
     updateAutoLaunchSelector();
     updatePreview();
 }
+
+/* ============================================================================
+   Event Delegation
+   ============================================================================
+   NOTE: This must be at the END of the last-loaded script (config.js) so that
+   all function references point to the correct modular versions from pins.js,
+   apps.js, etc. rather than any duplicates that may exist in app.js.
+   ============================================================================ */
+
+const actionHandlers = {
+    loadPreset,
+    loadConfig,
+    saveConfigAs,
+    showDeployHelp,
+    hideDeployHelp,
+    switchTab,
+    switchDeployTab,
+    setMode,
+    setAccountType,
+    generateGuid,
+    addApp,
+    addCommonApp,
+    addPin,
+    removeApp,
+    removePin,
+    updatePreview,
+    updateAppTypeUI,
+    updateEdgeSourceUI,
+    updateBreakoutUI,
+    updateBreakoutPreview,
+    updateAutoLaunchSelection,
+    updateMultiEdgeSourceUI,
+    updateEdgeTileSourceUI,
+    updatePinTargetPresets,
+    applyPinTargetPreset,
+    applyEditPinTargetPreset,
+    applyTaskbarPinTargetPreset,
+    applyEditTaskbarPinTargetPreset,
+    updateTaskbarPinTypeUI,
+    updateEditTaskbarPinTypeUI,
+    updatePinEdgeArgsModeUI,
+    updatePinEdgeArgsSourceUI,
+    updateEditPinEdgeArgsModeUI,
+    updateEditPinEdgeArgsSourceUI,
+    updateTaskbarPinEdgeArgsModeUI,
+    updateTaskbarPinEdgeArgsSourceUI,
+    updateEditTaskbarEdgeArgsModeUI,
+    updateEditTaskbarEdgeArgsSourceUI,
+    applyEdgeArgsToPin,
+    applyEdgeArgsToEditPin,
+    applyEdgeArgsToTaskbarPin,
+    applyEdgeArgsToEditTaskbarPin,
+    toggleExportSection,
+    editPin,
+    saveEditPin,
+    cancelEditPin,
+    movePinUp,
+    movePinDown,
+    duplicatePin,
+    addTaskbarPin,
+    editTaskbarPin,
+    saveTaskbarPin,
+    cancelTaskbarPinEdit,
+    removeTaskbarPin,
+    moveTaskbarPinUp,
+    moveTaskbarPinDown,
+    pinAllowedToStart,
+    pinAllowedToTaskbar,
+    addAllowedEdgeTile,
+    copyXml,
+    downloadXml,
+    downloadPowerShell,
+    downloadShortcutsScript,
+    downloadEdgeManifestWorkaround,
+    addEdgeSecondaryTile,
+    handleConfigImport,
+    copyProfileId,
+    dismissCallout,
+    toggleTheme
+};
+
+function runAction(action, target, event) {
+    const handler = actionHandlers[action];
+    if (!handler) return;
+
+    const arg = target?.dataset?.arg;
+    if (action === 'handleConfigImport') {
+        handler(event);
+        return;
+    }
+
+    if (arg !== undefined) {
+        if (action === 'removeApp' || action === 'removePin' || action === 'removeTaskbarPin') {
+            handler(parseInt(arg, 10));
+        } else {
+            handler(arg);
+        }
+        return;
+    }
+
+    handler();
+}
+
+function runActions(actionString, target, event) {
+    actionString.split('|').forEach(action => {
+        runAction(action.trim(), target, event);
+    });
+}
