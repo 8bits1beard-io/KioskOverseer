@@ -23,7 +23,7 @@ const SECTION_DEFS = [
     { key: 'navApplication', navLabel: 'STEP 2: ALLOWED APPLICATIONS', showNumber: false },
     { key: 'navStartmenu', navLabel: 'STEP 3: START MENU PINS', showNumber: false },
     { key: 'navTaskbar', navLabel: 'STEP 4: TASKBAR PINS', showNumber: false },
-    { key: 'navSummary', navLabel: 'STEP 5: SUMMARY', showNumber: false }
+    { key: 'navSummary', navLabel: 'SUMMARY & EXPORT', showNumber: false }
 ];
 
 const SECTION_START_INDEX = 1;
