@@ -2,6 +2,19 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.2.6] - 2026-01-23
+
+### Changed
+- Configuration summary now downloads as `README.md` for repository storage
+- Removed Start, Taskbar, and Edge Tile buttons from allowed apps list (use Step 3/4 instead)
+
+### Added
+- Island Browser support with kiosk mode detection and presets
+
+### Fixed
+- Consolidated modular architecture: moved actionHandlers to config.js for correct function references
+- Removed ~1300 lines of duplicate functions from app.js
+
 ## [1.1.2] - 2026-01-21
 
 ### Fixed
