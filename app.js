@@ -2169,7 +2169,8 @@ function updatePreview() {
     dom.get('previewShowTaskbar').textContent = dom.get('showTaskbar').checked ? 'Enabled' : 'Hidden';
     dom.get('previewFileExplorer').textContent = dom.get('fileExplorerAccess')?.selectedOptions?.[0]?.textContent || 'Unknown';
     dom.get('previewAutoLogon').textContent = state.accountType === 'auto' ? 'Enabled' : 'Disabled';
-    dom.get('previewGeneratedDate').textContent = generatedAt.toLocaleString();
+    const genDateEl = dom.get('previewGeneratedDate');
+    if (genDateEl) genDateEl.textContent = generatedAt.toLocaleString();
 
     // Only show XML if config is ready, otherwise show placeholder
     if (isConfigReadyForPreview()) {
@@ -2189,7 +2190,8 @@ function updatePreview() {
     updateExportAvailability();
     updateExportDetectedGuidance();
     const isValid = showValidation();
-    dom.get('previewStatus').textContent = isValid ? 'Valid' : 'Errors';
+    const statusEl = dom.get('previewStatus');
+    if (statusEl) statusEl.textContent = isValid ? 'Valid' : 'Errors';
     updateProgressRail();
 }
 
