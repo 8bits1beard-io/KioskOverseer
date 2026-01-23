@@ -136,23 +136,9 @@ function renderAppList() {
     }
 
     list.innerHTML = state.allowedApps.map((app, i) => {
-        const isEdge = isEdgeApp(app.value) || app.value === 'Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe!App';
         return `
         <div class="app-item" role="listitem">
-            <div style="display: flex; flex-direction: column; flex: 1; min-width: 0;">
-                <span title="${escapeXml(app.value)}"><span aria-hidden="true">${app.type === 'aumid' ? '📦 ' : '📄 '}</span>${escapeXml(truncate(app.value, 60))}</span>
-                <div class="pin-actions" style="margin-top: 6px;">
-                    <button type="button" class="btn-icon btn-small" data-action="pinAllowedToStart" data-arg="${i}" aria-label="Pin to Start">
-                        <span aria-hidden="true">Start</span>
-                    </button>
-                    <button type="button" class="btn-icon btn-small" data-action="pinAllowedToTaskbar" data-arg="${i}" aria-label="Pin to Taskbar">
-                        <span aria-hidden="true">Taskbar</span>
-                    </button>
-                    <button type="button" class="btn-icon btn-small" data-action="addAllowedEdgeTile" data-arg="${i}" aria-label="Add Edge site tile" ${isEdge ? '' : 'disabled'}>
-                        <span aria-hidden="true">Edge Tile</span>
-                    </button>
-                </div>
-            </div>
+            <span title="${escapeXml(app.value)}"><span aria-hidden="true">${app.type === 'aumid' ? '📦 ' : '📄 '}</span>${escapeXml(truncate(app.value, 60))}</span>
             <button type="button" class="remove-btn" data-action="removeApp" data-arg="${i}" aria-label="Remove ${escapeXml(truncate(app.value, 30))}">
                 <span aria-hidden="true">✕</span>
             </button>
