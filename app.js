@@ -14,13 +14,14 @@ const SECTION_DEFS = [
     { key: 'edgeKiosk', title: 'EDGE KIOSK SETTINGS' },
     { key: 'win32Args', title: 'WIN32 APP ARGUMENTS' },
     { key: 'startMenuPins', title: 'START MENU PINS' },
-    { key: 'taskbarLayout', title: 'TASKBAR LAYOUT (OPTIONAL)' },
+    { key: 'taskbarLayout', title: 'TASKBAR PINS' },
     { key: 'xmlPreview', title: 'XML PREVIEW' },
     { key: 'deployGuide', title: 'DEPLOYMENT GUIDE' },
     { key: 'navigation', title: 'NAVIGATION', showNumber: false },
     { key: 'navSetup', navLabel: 'STEP 1: KIOSK TYPE', showNumber: false },
     { key: 'navApplication', navLabel: 'STEP 2: ALLOWED APPLICATIONS', showNumber: false },
-    { key: 'navStartmenu', navLabel: 'STEP 3: PINNED ITEMS', showNumber: false }
+    { key: 'navStartmenu', navLabel: 'STEP 3: START MENU PINS', showNumber: false },
+    { key: 'navTaskbar', navLabel: 'STEP 4: TASKBAR PINS', showNumber: false }
 ];
 
 const SECTION_START_INDEX = 1;
@@ -179,9 +180,10 @@ function updateTabVisibility() {
     const isMultiOrRestricted = state.mode === 'multi' || state.mode === 'restricted';
     const applicationTab = dom.get('tab-btn-application');
     const startMenuTab = dom.get('tab-btn-startmenu');
+    const taskbarTab = dom.get('tab-btn-taskbar');
 
     // Show/hide tabs based on mode - both multi and restricted need these tabs
-    // Single mode hides Step 2 (Allowed Applications) and Step 3 (Pinned Items)
+    // Single mode hides Step 2 (Allowed Applications), Step 3 (Start Menu Pins), and Step 4 (Taskbar Pins)
     if (applicationTab) {
         applicationTab.classList.toggle('hidden', !isMultiOrRestricted);
         applicationTab.disabled = !isMultiOrRestricted;
@@ -192,11 +194,16 @@ function updateTabVisibility() {
         startMenuTab.disabled = !isMultiOrRestricted;
         startMenuTab.setAttribute('aria-hidden', !isMultiOrRestricted);
     }
+    if (taskbarTab) {
+        taskbarTab.classList.toggle('hidden', !isMultiOrRestricted);
+        taskbarTab.disabled = !isMultiOrRestricted;
+        taskbarTab.setAttribute('aria-hidden', !isMultiOrRestricted);
+    }
 
-    // If switching to single mode and currently on Step 2 or Step 3, switch back to Step 1 (Setup)
+    // If switching to single mode and currently on Step 2, 3, or 4, switch back to Step 1 (Setup)
     if (!isMultiOrRestricted) {
         const activeTab = document.querySelector('.side-nav-btn.active');
-        if (activeTab && (activeTab.id === 'tab-btn-application' || activeTab.id === 'tab-btn-startmenu')) {
+        if (activeTab && (activeTab.id === 'tab-btn-application' || activeTab.id === 'tab-btn-startmenu' || activeTab.id === 'tab-btn-taskbar')) {
             switchTab('setup');
         }
     }
@@ -373,7 +380,6 @@ const actionHandlers = {
     loadPreset,
     loadConfig,
     saveConfigAs,
-    importXml,
     showDeployHelp,
     hideDeployHelp,
     switchTab,
@@ -435,9 +441,7 @@ const actionHandlers = {
     downloadPowerShell,
     downloadShortcutsScript,
     downloadEdgeManifestWorkaround,
-    downloadStartLayoutXml,
     addEdgeSecondaryTile,
-    handleImport,
     handleConfigImport,
     copyProfileId,
     dismissCallout,
@@ -449,7 +453,7 @@ function runAction(action, target, event) {
     if (!handler) return;
 
     const arg = target?.dataset?.arg;
-    if (action === 'handleImport' || action === 'handleConfigImport') {
+    if (action === 'handleConfigImport') {
         handler(event);
         return;
     }
@@ -3033,36 +3037,6 @@ Logging:
     }, 200);
 }
 
-function downloadStartLayoutXml() {
-    if (!showValidation()) {
-        if (!confirm('Configuration has errors. Download anyway?')) return;
-    }
-
-    const layoutXml = buildStartLayoutXml();
-    if (!layoutXml) {
-        if (!confirm('No Start menu pins configured. Download empty Start layout anyway?')) return;
-    }
-
-    const content = layoutXml || `<?xml version="1.0" encoding="utf-8"?>\n` +
-        `<LayoutModificationTemplate Version="1"\n` +
-        `    xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"\n` +
-        `    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout"\n` +
-        `    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout">\n` +
-        `    <LayoutOptions StartTileGroupCellWidth="6"/>\n` +
-        `    <DefaultLayoutOverride>\n` +
-        `        <StartLayoutCollection>\n` +
-        `            <defaultlayout:StartLayout GroupCellWidth="6">\n` +
-        `                <start:Group Name="Kiosk"/>\n` +
-        `            </defaultlayout:StartLayout>\n` +
-        `        </StartLayoutCollection>\n` +
-        `    </DefaultLayoutOverride>\n` +
-        `</LayoutModificationTemplate>`;
-
-    const configName = dom.get('configName').value.trim();
-    const suffix = configName ? configName.replace(/\s+/g, '-').replace(/[<>:"/\\|?*]/g, '') : 'Config';
-    downloadFile(content, `StartLayout_${suffix}.xml`, 'application/xml');
-}
-
 /* ============================================================================
    Config Save / Load
    ============================================================================ */
@@ -3399,294 +3373,6 @@ function generateReadme() {
     readme += `A reboot is required after applying the configuration.\n`;
 
     return readme;
-}
-
-/* ============================================================================
-   Import XML
-   ============================================================================ */
-function importXml() {
-    dom.get('importInput').click();
-}
-
-function handleImport(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            parseAndLoadXml(e.target.result);
-            alert('XML imported successfully!');
-        } catch (err) {
-            alert('Failed to parse XML: ' + err.message);
-        }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-}
-
-function parseAndLoadXml(xmlString) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlString, 'text/xml');
-    const root = doc.documentElement;
-    if (!root || root.localName !== 'AssignedAccessConfiguration') {
-        throw new Error('Only AssignedAccess configuration XML files are supported.');
-    }
-
-    // Profile ID
-    const profile = doc.querySelector('Profile');
-    if (profile) {
-        dom.get('profileId').value = profile.getAttribute('Id') || '';
-    }
-
-    // Check for KioskModeApp (single-app) or AllAppsList (multi-app)
-    const kioskModeApp = doc.querySelector('KioskModeApp');
-    const allAppsList = doc.querySelector('AllAppsList');
-
-    if (kioskModeApp && !allAppsList) {
-        // Single-app mode
-        setMode('single');
-
-        const aumid = kioskModeApp.getAttribute('AppUserModelId');
-        const classicArgs = kioskModeApp.getAttributeNS('http://schemas.microsoft.com/AssignedAccess/2021/config', 'ClassicAppArguments') ||
-                           kioskModeApp.getAttribute('v4:ClassicAppArguments');
-
-        if (aumid === 'MSEdge' || (aumid && aumid.includes('Edge'))) {
-            dom.get('appType').value = 'edge';
-            updateAppTypeUI();
-
-            if (classicArgs) {
-                // Parse Edge arguments
-                const urlMatch = classicArgs.match(/--kiosk\s+(\S+)/);
-                if (urlMatch) {
-                    const extractedUrl = urlMatch[1];
-                    // Check if it's a file:// URL
-                    if (extractedUrl.toLowerCase().startsWith('file:///')) {
-                        dom.get('edgeSourceType').value = 'file';
-                        // Decode the file path and remove file:/// prefix
-                        let filePath = extractedUrl.substring(8); // Remove 'file:///'
-                        filePath = decodeURIComponent(filePath);
-                        dom.get('edgeFilePath').value = filePath;
-                        dom.get('edgeUrl').value = '';
-                    } else {
-                        dom.get('edgeSourceType').value = 'url';
-                        dom.get('edgeUrl').value = extractedUrl;
-                        dom.get('edgeFilePath').value = '';
-                    }
-                    updateEdgeSourceUI();
-                }
-
-                dom.get('edgeKioskType').value =
-                    classicArgs.includes('public-browsing') ? 'public-browsing' : 'fullscreen';
-                // InPrivate is always enabled in kiosk mode, no need to import this setting
-            }
-        } else if (aumid) {
-            dom.get('appType').value = 'uwp';
-            updateAppTypeUI();
-            dom.get('uwpAumid').value = aumid;
-        } else {
-            // Win32 app - check for ClassicAppPath
-            const classicAppPath = kioskModeApp.getAttributeNS('http://schemas.microsoft.com/AssignedAccess/2021/config', 'ClassicAppPath') ||
-                                  kioskModeApp.getAttribute('v4:ClassicAppPath');
-            if (classicAppPath) {
-                dom.get('appType').value = 'win32';
-                updateAppTypeUI();
-                dom.get('win32Path').value = classicAppPath;
-                dom.get('win32Args').value = classicArgs || '';
-            }
-        }
-
-        // Import BreakoutSequence if present (handle namespace prefix)
-        const breakoutSequence = doc.querySelector('BreakoutSequence, [*|BreakoutSequence]') ||
-                                Array.from(doc.querySelectorAll('*')).find(el => el.localName === 'BreakoutSequence');
-        const breakoutKey = breakoutSequence ? breakoutSequence.getAttribute('Key') : null;
-        if (breakoutKey) {
-            dom.get('enableBreakout').checked = true;
-            updateBreakoutUI();
-
-            // Parse the key combination (e.g., "Ctrl+Alt+K")
-            const parts = breakoutKey.split('+');
-            const finalKey = parts[parts.length - 1].toUpperCase();
-
-            dom.get('breakoutCtrl').checked = breakoutKey.toLowerCase().includes('ctrl');
-            dom.get('breakoutAlt').checked = breakoutKey.toLowerCase().includes('alt');
-            dom.get('breakoutShift').checked = breakoutKey.toLowerCase().includes('shift');
-
-            // Set the final key if it's a valid option
-            const finalKeySelect = dom.get('breakoutFinalKey');
-            for (let option of finalKeySelect.options) {
-                if (option.value === finalKey) {
-                    finalKeySelect.value = finalKey;
-                    break;
-                }
-            }
-            updateBreakoutPreview();
-        } else {
-            dom.get('enableBreakout').checked = false;
-            updateBreakoutUI();
-        }
-    } else if (allAppsList) {
-        // Multi-app mode
-        setMode('multi');
-
-        state.allowedApps = [];
-        state.autoLaunchApp = null;
-        const apps = allAppsList.querySelectorAll('App');
-        let appIndex = 0;
-        apps.forEach(app => {
-            const aumid = app.getAttribute('AppUserModelId');
-            const path = app.getAttribute('DesktopAppPath');
-            if (aumid) {
-                state.allowedApps.push({ type: 'aumid', value: aumid });
-            } else if (path) {
-                state.allowedApps.push({ type: 'path', value: path });
-            }
-
-            // Check for AutoLaunch attribute (rs5 namespace)
-            const autoLaunch = app.getAttributeNS('http://schemas.microsoft.com/AssignedAccess/201901/config', 'AutoLaunch') ||
-                              app.getAttribute('rs5:AutoLaunch');
-            if (autoLaunch === 'true') {
-                state.autoLaunchApp = appIndex;
-
-                // Parse AutoLaunchArguments
-                const autoLaunchArgs = app.getAttributeNS('http://schemas.microsoft.com/AssignedAccess/201901/config', 'AutoLaunchArguments') ||
-                                      app.getAttribute('rs5:AutoLaunchArguments');
-                if (autoLaunchArgs) {
-                    const currentAppPath = path || aumid;
-                    const isEdge = isEdgeApp(currentAppPath);
-
-                    if (isEdge) {
-                        // Parse Edge arguments
-                        const urlMatch = autoLaunchArgs.match(/--kiosk\s+(\S+)/);
-                        if (urlMatch) {
-                            const extractedUrl = urlMatch[1];
-                            if (extractedUrl.toLowerCase().startsWith('file:///')) {
-                                dom.get('multiEdgeSourceType').value = 'file';
-                                let filePath = extractedUrl.substring(8);
-                                filePath = decodeURIComponent(filePath);
-                                dom.get('multiEdgeFilePath').value = filePath;
-                                dom.get('multiEdgeUrl').value = '';
-                            } else {
-                                dom.get('multiEdgeSourceType').value = 'url';
-                                dom.get('multiEdgeUrl').value = extractedUrl;
-                                dom.get('multiEdgeFilePath').value = '';
-                            }
-                            updateMultiEdgeSourceUI();
-                        }
-
-                        dom.get('multiEdgeKioskType').value =
-                            autoLaunchArgs.includes('public-browsing') ? 'public-browsing' : 'fullscreen';
-                        // InPrivate is always enabled in kiosk mode, no need to import this setting
-                    } else if (path) {
-                        // Non-Edge Win32 app - populate win32 args field
-                        dom.get('win32AutoLaunchArgs').value = autoLaunchArgs;
-                    }
-                }
-            }
-            appIndex++;
-        });
-        renderAppList();
-        updateAutoLaunchSelector();
-        // Restore auto-launch selection after selector is populated
-        if (state.autoLaunchApp !== null) {
-            dom.get('autoLaunchApp').value = state.autoLaunchApp;
-            updateMultiAppEdgeUI();
-        }
-
-        // Start Pins (handle namespace prefix v5:StartPins)
-        // Note: Imported shortcuts will only have names extracted from paths
-        // User will need to verify/update target paths if importing older configs
-        state.startPins = [];
-        const startPins = doc.querySelector('StartPins') ||
-                         Array.from(doc.querySelectorAll('*')).find(el => el.localName === 'StartPins');
-        if (startPins) {
-            try {
-                const pinsJson = JSON.parse(startPins.textContent);
-                if (pinsJson.pinnedList) {
-                    pinsJson.pinnedList.forEach(pin => {
-                        if (pin.desktopAppLink) {
-                            // Try to extract name from path (e.g., %ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Name.lnk)
-                            const path = pin.desktopAppLink;
-                            let name = path;
-
-                            // Extract filename without extension
-                            const match = path.match(/([^\\\/]+)\.lnk$/i);
-                            if (match) {
-                                name = match[1];
-                            }
-
-                            // Create a basic shortcut object - user may need to update target
-                            state.startPins.push({
-                                name: name,
-                                target: '', // Unknown from XML, user needs to set if no .lnk is available
-                                systemShortcut: path,
-                                args: '',
-                                workingDir: '',
-                                iconPath: ''
-                            });
-                        }
-                    });
-                }
-                if (state.startPins.length > 0 && state.startPins.some(p => !p.target)) {
-                    console.warn('Imported shortcuts need target paths configured');
-                }
-            } catch (e) {
-                console.warn('Failed to parse StartPins JSON:', e.message);
-            }
-        }
-        renderPinList();
-
-        // Taskbar (handle namespace prefix v4:Taskbar)
-        const taskbar = doc.querySelector('Taskbar') ||
-                       Array.from(doc.querySelectorAll('*')).find(el => el.localName === 'Taskbar');
-        if (taskbar) {
-            dom.get('showTaskbar').checked =
-                taskbar.getAttribute('ShowTaskbar') === 'true';
-        }
-
-        // File Explorer restrictions (handle namespace prefix rs5:FileExplorerNamespaceRestrictions)
-        const fileExplorerRestrictions = doc.querySelector('FileExplorerNamespaceRestrictions') ||
-                                        Array.from(doc.querySelectorAll('*')).find(el => el.localName === 'FileExplorerNamespaceRestrictions');
-        if (fileExplorerRestrictions) {
-            const downloads = fileExplorerRestrictions.querySelector('AllowedNamespace[Name="Downloads"]') ||
-                             Array.from(fileExplorerRestrictions.querySelectorAll('*')).find(el => el.localName === 'AllowedNamespace' && el.getAttribute('Name') === 'Downloads');
-            const removable = fileExplorerRestrictions.querySelector('AllowRemovableDrives') ||
-                             Array.from(fileExplorerRestrictions.querySelectorAll('*')).find(el => el.localName === 'AllowRemovableDrives');
-            const noRestriction = fileExplorerRestrictions.querySelector('NoRestriction') ||
-                                 Array.from(fileExplorerRestrictions.querySelectorAll('*')).find(el => el.localName === 'NoRestriction');
-
-            if (noRestriction) {
-                dom.get('fileExplorerAccess').value = 'all';
-            } else if (downloads && removable) {
-                dom.get('fileExplorerAccess').value = 'downloads-removable';
-            } else if (downloads) {
-                dom.get('fileExplorerAccess').value = 'downloads';
-            } else if (removable) {
-                dom.get('fileExplorerAccess').value = 'removable';
-            } else {
-                dom.get('fileExplorerAccess').value = 'none';
-            }
-        } else {
-            dom.get('fileExplorerAccess').value = 'none';
-        }
-    }
-
-    // Account
-    const autoLogon = doc.querySelector('AutoLogonAccount');
-    const account = doc.querySelector('Config Account');
-
-    if (autoLogon) {
-        setAccountType('auto');
-        const displayName = autoLogon.getAttributeNS('http://schemas.microsoft.com/AssignedAccess/201901/config', 'DisplayName') ||
-                           autoLogon.getAttribute('rs5:DisplayName') ||
-                           autoLogon.getAttribute('DisplayName');
-        dom.get('displayName').value = displayName || '';
-    } else if (account) {
-        setAccountType('existing');
-        dom.get('accountName').value = account.textContent || '';
-    }
-
-    updatePreview();
 }
 
 /* ============================================================================

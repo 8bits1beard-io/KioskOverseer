@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'self'; form-action 'self'">
     <title>Kiosk Overseer (Windows Kiosk Builder)</title>
-    <link rel="stylesheet" href="styles.css?v=1.1.4">
+    <link rel="stylesheet" href="styles.css?v=1.1.7">
     <link rel="icon" type="image/png" href="assets/logo-mksa.png">
 </head>
 <body>
@@ -15,13 +15,14 @@
     <header role="banner">
         <div class="header-top">
             <div class="header-system-label">
-                KIOSK OVERSEER // BUILD 1.1.4
+                KIOSK OVERSEER // BUILD 1.1.7
                 <button type="button" class="btn-secondary btn-small" id="themeToggle" data-action="toggleTheme">Theme: Fallout</button>
             </div>
             <nav class="header-actions command-strip" aria-label="Main actions">
                 <button type="button" class="btn-secondary" data-action="loadPreset" data-arg="blank">New</button>
                 <button type="button" class="btn-secondary" data-action="loadConfig">Load Config</button>
                 <button type="button" class="btn-secondary" data-action="saveConfigAs">Save Config</button>
+                <button type="button" class="btn-secondary" data-action="showDeployHelp">Deploy Guide</button>
             </nav>
         </div>
     </header>
@@ -32,7 +33,8 @@
                 <div class="side-nav-title" data-section-key="navigation"></div>
                 <button type="button" class="side-nav-btn active" role="tab" aria-selected="true" aria-controls="tab-setup" id="tab-btn-setup" data-action="switchTab" data-arg="setup" data-section-key="navSetup">STEP 1: Kiosk Type</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application" data-section-key="navApplication">STEP 2: Allowed Applications</button>
-                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">STEP 3: Pinned Items</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">STEP 3: Start Menu Pins</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-taskbar" id="tab-btn-taskbar" data-action="switchTab" data-arg="taskbar" data-section-key="navTaskbar">STEP 4: Taskbar Pins</button>
             </div>
             <div class="side-nav-logo" role="presentation">
                 <img src="assets/Fallout_MKSA.png" alt="MKSA">
@@ -615,8 +617,8 @@
                     <!-- Start Menu Tab (Multi-App only) -->
                     <div class="tab-content" role="tabpanel" id="tab-startmenu" aria-labelledby="tab-btn-startmenu">
                     <fieldset class="section">
-                        <legend class="section-header collapsible-header collapsed" data-section-key="startMenuPins"></legend>
-                        <div class="section-content collapsible-content collapsed">
+                        <legend class="section-header collapsible-header" data-section-key="startMenuPins"></legend>
+                        <div class="section-content collapsible-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">PINNED SHORTCUTS</div>
                             <div class="form-group">
@@ -838,9 +840,14 @@
                             </div>
                         </div>
                     </fieldset>
+                    </div>
+                    <!-- End Start Menu Tab -->
+
+                    <!-- Taskbar Tab (Multi-App only) -->
+                    <div class="tab-content" role="tabpanel" id="tab-taskbar" aria-labelledby="tab-btn-taskbar">
                     <fieldset class="section">
-                        <legend class="section-header collapsible-header collapsed" data-section-key="taskbarLayout"></legend>
-                        <div class="section-content collapsible-content collapsed">
+                        <legend class="section-header collapsible-header" data-section-key="taskbarLayout"></legend>
+                        <div class="section-content collapsible-content">
                             <div class="sub-panel">
                             <div class="sub-panel-title">TASKBAR PINS</div>
                             <div class="form-group">
@@ -1020,7 +1027,7 @@
                         </div>
                     </fieldset>
                     </div>
-                    <!-- End Start Menu Tab -->
+                    <!-- End Taskbar Tab -->
 
                 </div>
                 <!-- End tab-panels -->
@@ -1111,13 +1118,10 @@
                     </div>
                 </div>
                 <div class="preview-actions" role="group" aria-label="Export options">
-                    <button type="button" class="btn-secondary btn-small" data-action="importXml" title="Assigned Access XML only">Import XML</button>
                     <button type="button" class="btn-primary btn-small" data-action="downloadXml">Download XML</button>
                     <button type="button" class="btn-secondary btn-small" data-action="copyXml">Copy to Clipboard</button>
                     <button type="button" class="btn-secondary btn-small" data-action="downloadPowerShell" title="All-in-one script: applies XML, creates shortcuts, configures the kiosk. Use -ShortcutsOnly flag for shortcuts only.">All-In-One Script</button>
-                    <button type="button" class="btn-secondary btn-small" data-action="downloadStartLayoutXml" id="downloadStartLayoutBtn" title="For Windows 10 Start menu customization">Start Layout</button>
                     <button type="button" class="btn-secondary btn-small" data-action="downloadEdgeManifestWorkaround" title="Helps Windows honor Edge shortcut icons">Manifest Override</button>
-                    <button type="button" class="btn-secondary btn-small" data-action="showDeployHelp">Deploy Guide</button>
                 </div>
                 <pre class="xml-preview crt-terminal crt-pane" id="xmlPreview" aria-label="Generated XML configuration" tabindex="0">
                     <!-- XML will be rendered here -->
@@ -1126,8 +1130,6 @@
         </section>
     </main>
 
-    <label for="importInput" class="sr-only">Import XML configuration file</label>
-    <input type="file" id="importInput" accept=".xml" style="display:none" data-change="handleImport">
     <label for="configImportInput" class="sr-only">Import Kiosk Overseer configuration file</label>
     <input type="file" id="configImportInput" accept=".kioskoverseer.json,.json" style="display:none" data-change="handleConfigImport">
 
@@ -1308,14 +1310,14 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.1.4"></script>
-    <script src="state.js?v=1.1.4"></script>
-    <script src="helpers.js?v=1.1.4"></script>
-    <script src="xml.js?v=1.1.4"></script>
-    <script src="validation.js?v=1.1.4"></script>
-    <script src="app.js?v=1.1.4"></script>
-    <script src="apps.js?v=1.1.4"></script>
-    <script src="pins.js?v=1.1.4"></script>
-    <script src="config.js?v=1.1.4"></script>
+    <script src="dom.js?v=1.1.7"></script>
+    <script src="state.js?v=1.1.7"></script>
+    <script src="helpers.js?v=1.1.7"></script>
+    <script src="xml.js?v=1.1.7"></script>
+    <script src="validation.js?v=1.1.7"></script>
+    <script src="app.js?v=1.1.7"></script>
+    <script src="apps.js?v=1.1.7"></script>
+    <script src="pins.js?v=1.1.7"></script>
+    <script src="config.js?v=1.1.7"></script>
 </body>
 </html>

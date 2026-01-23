@@ -100,7 +100,19 @@ function generateMultiAppProfile() {
                 attrs += ` rs5:AutoLaunchArguments="${escapeXml(args)}"`;
             } else if (app.type === 'path') {
                 // Non-Edge Win32 app - add arguments if specified
-                const win32Args = dom.get('win32AutoLaunchArgs').value.trim();
+                let win32Args = dom.get('win32AutoLaunchArgs').value.trim();
+
+                // For Chrome/Brave, auto-add file access flag if using file:// URL
+                const isChrome = isChromeApp(app.value);
+                const isBrave = isBraveApp(app.value);
+                if ((isChrome || isBrave) && win32Args) {
+                    const hasFileUrl = win32Args.toLowerCase().includes('file://');
+                    const hasFileAccessFlag = win32Args.toLowerCase().includes('--allow-file-access-from-files');
+                    if (hasFileUrl && !hasFileAccessFlag) {
+                        win32Args += ' --allow-file-access-from-files';
+                    }
+                }
+
                 if (win32Args) {
                     attrs += ` rs5:AutoLaunchArguments="${escapeXml(win32Args)}"`;
                 }
@@ -184,55 +196,6 @@ function buildStartPinsJson() {
             };
         })
     };
-}
-
-function buildStartLayoutXml() {
-    const pins = state.startPins;
-    if (pins.length === 0) {
-        return null;
-    }
-
-    const tiles = [];
-    let col = 0;
-    let row = 0;
-    const maxCols = 6;
-
-    pins.forEach(pin => {
-        let tile = '';
-        if (pin.pinType === 'packagedAppId' && pin.packagedAppId) {
-            tile = `<start:Tile Size="2x2" Column="${col}" Row="${row}" AppUserModelID="${escapeXml(pin.packagedAppId)}" />`;
-        } else if (pin.pinType === 'secondaryTile' && pin.packagedAppId) {
-            tile = `<start:Tile Size="2x2" Column="${col}" Row="${row}" AppUserModelID="${escapeXml(pin.packagedAppId)}" />`;
-        } else {
-            const linkPath = pin.systemShortcut || `%ALLUSERSPROFILE%\\Microsoft\\Windows\\Start Menu\\Programs\\${pin.name}.lnk`;
-            tile = `<start:DesktopApplicationTile Size="2x2" Column="${col}" Row="${row}" DesktopApplicationLinkPath="${escapeXml(linkPath)}" />`;
-        }
-
-        tiles.push(tile);
-
-        col += 2;
-        if (col >= maxCols) {
-            col = 0;
-            row += 2;
-        }
-    });
-
-    return `<?xml version="1.0" encoding="utf-8"?>\n` +
-`<LayoutModificationTemplate Version="1"\n` +
-`    xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"\n` +
-`    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout"\n` +
-`    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout">\n` +
-`    <LayoutOptions StartTileGroupCellWidth="6"/>\n` +
-`    <DefaultLayoutOverride>\n` +
-`        <StartLayoutCollection>\n` +
-`            <defaultlayout:StartLayout GroupCellWidth="6">\n` +
-`                <start:Group Name="Kiosk">\n` +
-`                    ${tiles.join('\n                    ')}\n` +
-`                </start:Group>\n` +
-`            </defaultlayout:StartLayout>\n` +
-`        </StartLayoutCollection>\n` +
-`    </DefaultLayoutOverride>\n` +
-`</LayoutModificationTemplate>`;
 }
 
 function buildTaskbarLayoutXml() {
