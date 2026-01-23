@@ -34,11 +34,11 @@ Technical reference for Kiosk Overseer.
    - Select an app to launch automatically at sign-in
    - If Edge is selected, configure URL and kiosk type
 4. Add Start menu pins:
-   - Pin from Allowed Apps or create custom pins
+   - Create pins for apps users should see in the Start menu
    - Each pin needs: Name, Target path, optional arguments/icon
    - Icon files must exist on the target device; the tool creates shortcuts but does not deploy icons
-   - Use the actions next to Allowed Apps to pin to Start/Taskbar or add Edge site tiles
-5. Configure taskbar pins (optional): shortcut icon paths must exist on the target device
+   - Use Edge Secondary Tile for pinned websites
+5. Configure taskbar pins (optional): add apps to appear on the taskbar
 6. Configure **Taskbar** and **File Explorer** settings in Setup
 7. Configure account (Auto-logon or Existing Account)
 8. Export
