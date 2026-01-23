@@ -21,6 +21,20 @@ python -m http.server 8080
 
 No build step, no npm, no framework. Pure vanilla JavaScript served statically.
 
+## Agent Usage
+
+When working on complex tasks, spin up agents in parallel to maximize efficiency:
+
+- **Codebase exploration** - Use Explore agents to search for patterns, find files, or understand how features work
+- **Multi-file analysis** - Spawn multiple agents to analyze different files simultaneously
+- **Bug hunting** - Use agents to search for issues like missing DOM elements, undefined variables, or duplicate functions
+- **Refactoring** - Use Plan agents to design changes, then implement
+
+Example scenarios where agents help:
+- "Find all places that reference browser detection" → Explore agent
+- "Check for errors across the codebase" → Multiple agents analyzing different modules
+- "How does the pin system work?" → Explore agent with thorough analysis
+
 ## Architecture
 
 ### Script Loading Order (Critical)
