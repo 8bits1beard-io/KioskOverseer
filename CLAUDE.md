@@ -106,12 +106,12 @@ To add a new action:
 ### Browser Kiosk Support
 
 `helpers.js` provides browser detection functions:
-- `isEdgeApp()`, `isChromeApp()`, `isFirefoxApp()`, `isBraveApp()`
-- `isBrowserWithKioskSupport()` - combines all four
+- `isEdgeApp()`, `isChromeApp()`, `isFirefoxApp()`, `isBraveApp()`, `isIslandApp()`
+- `isBrowserWithKioskSupport()` - combines all five
 
 Kiosk args vary by browser:
 - **Edge**: Full options (fullscreen/public-browsing, idle timeout)
-- **Chrome/Brave**: `--kiosk URL --no-first-run`
+- **Chrome/Brave/Island**: `--kiosk URL --no-first-run`
 - **Firefox**: `--kiosk URL`
 
 ### XML Namespace Versions
@@ -194,7 +194,7 @@ App preset structure:
 Manual testing only (no automated test framework):
 
 1. Test all three kiosk modes (Single-App, Multi-App, Restricted User)
-2. Test browser kiosk options (Edge, Chrome, Firefox, Brave)
+2. Test browser kiosk options (Edge, Chrome, Firefox, Brave, Island)
 3. Test pin management (add, edit, reorder, duplicate, remove)
 4. Test all exports (XML, PowerShell, shortcuts, config save/load)
 5. Test configuration save/load functionality

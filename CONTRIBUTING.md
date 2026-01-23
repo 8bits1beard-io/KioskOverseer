@@ -31,11 +31,14 @@ python -m http.server
 ## Project Structure
 
 ```
-├── index.html          # Entry point, UI structure, inline styles
-├── app.js              # Core application logic, event handlers, exports
+├── index.html          # Entry point, UI structure
+├── app.js              # Core UI logic, mode switching, Edge args, exports
+├── apps.js             # Allowed apps management
+├── pins.js             # Unified Start menu and Taskbar pin management
+├── config.js           # Configuration save/load + actionHandlers event delegation
 ├── xml.js              # AssignedAccess XML generation
 ├── validation.js       # Input validation rules
-├── helpers.js          # Utility functions (clipboard, download, escapeXml)
+├── helpers.js          # Utility functions (clipboard, download, browser detection)
 ├── dom.js              # DOM element caching
 ├── state.js            # Application state and preset loading
 ├── styles.css          # UI themes (Fallout, Fluent) and layout
@@ -50,7 +53,10 @@ python -m http.server
 
 | File | Purpose |
 |------|---------|
-| `app.js` | Main application logic, event handlers, export generation |
+| `app.js` | Core UI: mode switching, Edge args builder, export generation |
+| `apps.js` | Allowed apps CRUD: addAllowedApp, removeApp, renderAppList |
+| `pins.js` | All pin operations for Start menu and Taskbar |
+| `config.js` | Configuration persistence + `actionHandlers` event delegation |
 | `xml.js` | Generates AssignedAccess XML with proper namespaces |
 | `validation.js` | Validates user input and configuration state |
 | `helpers.js` | Utility functions shared across modules |
@@ -103,16 +109,20 @@ If you add automated tests, please document the test runner and execution instru
 ### Adding a New App Preset
 
 1. Edit `data/app-presets.json`
-2. Add an entry with the required fields:
+2. Add entries to the `apps` object and optionally create a group:
    ```json
    {
-     "name": "Application Name",
-     "type": "win32",
-     "path": "C:\\Path\\To\\app.exe",
-     "group": "category"
+     "apps": {
+       "myApp": { "type": "path", "value": "C:\\Path\\To\\app.exe" },
+       "myApp86": { "type": "path", "value": "C:\\Path (x86)\\To\\app.exe" }
+     },
+     "groups": {
+       "myApp": ["myApp", "myApp86"]
+     }
    }
    ```
-3. For UWP apps, use `"type": "uwp"` and `"aumid": "..."` instead of `path`
+3. For UWP apps, use `"type": "aumid"` and `"value": "AppId!App"`
+4. Use `skipAutoPin: true` or `skipAutoLaunch: true` for helper apps (like Edge proxy)
 
 ### Adding a New Pin Preset
 
