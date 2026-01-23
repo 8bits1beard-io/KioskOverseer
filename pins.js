@@ -183,6 +183,11 @@ function renderPinListForType(listType) {
             ? `<button type="button" class="btn-icon btn-small" data-action="duplicatePin" data-arg="${i}" aria-label="Duplicate ${escapeXml(pin.name)}"><span aria-hidden="true">⧉</span></button>`
             : '';
 
+        // Copy to Taskbar button - only for Start pins that are valid taskbar types (not secondary tiles)
+        const copyToTaskbarBtn = (listType === 'start' && (pin.pinType === 'desktopAppLink' || pin.pinType === 'packagedAppId'))
+            ? `<button type="button" class="btn-icon btn-small" data-action="copyPinToTaskbar" data-arg="${i}" aria-label="Copy ${escapeXml(pin.name)} to Taskbar" title="Copy to Taskbar"><span aria-hidden="true">⤵</span></button>`
+            : '';
+
         return `
         <div class="app-item draggable" role="listitem" data-pin-list="${listType}" data-index="${i}" draggable="true" style="${missingTarget ? 'border-left: 3px solid var(--error-color, #e74c3c);' : ''}">
             <div style="display: flex; flex-direction: column; flex: 1; min-width: 0;">
@@ -198,6 +203,7 @@ function renderPinListForType(listType) {
                     <span aria-hidden="true">↓</span>
                 </button>
                 ${duplicateBtn}
+                ${copyToTaskbarBtn}
                 <button type="button" class="btn-icon btn-small" data-action="${editAction}" data-arg="${i}" aria-label="Edit ${escapeXml(pin.name || 'pin')}">
                     <span aria-hidden="true">✎</span>
                 </button>
@@ -560,6 +566,47 @@ function duplicatePin(index) {
     state.startPins.push(clone);
     renderPinList();
     editPin(state.startPins.length - 1);
+    updatePreview();
+}
+
+function copyPinToTaskbar(index) {
+    const pin = state.startPins[index];
+    if (!pin) return;
+
+    // Only desktop and packaged app pins can be copied to taskbar (not secondary tiles)
+    if (pin.pinType !== 'desktopAppLink' && pin.pinType !== 'packagedAppId') {
+        alert('Edge site tiles cannot be pinned to the taskbar.');
+        return;
+    }
+
+    // Check if already on taskbar
+    if (pin.pinType === 'packagedAppId') {
+        if (state.taskbarPins.some(p => p.pinType === 'packagedAppId' && p.packagedAppId === pin.packagedAppId)) {
+            alert('This app is already pinned to the taskbar.');
+            return;
+        }
+    } else {
+        const targetMatch = pin.target || pin.systemShortcut;
+        if (targetMatch && state.taskbarPins.some(p => p.target === targetMatch || p.systemShortcut === targetMatch)) {
+            alert('This app is already pinned to the taskbar.');
+            return;
+        }
+    }
+
+    // Clone the pin for taskbar
+    const taskbarPin = {
+        name: pin.name || 'Unnamed',
+        pinType: pin.pinType,
+        packagedAppId: pin.packagedAppId || '',
+        systemShortcut: pin.systemShortcut || '',
+        target: pin.target || '',
+        args: pin.args || '',
+        workingDir: pin.workingDir || '',
+        iconPath: pin.iconPath || ''
+    };
+
+    state.taskbarPins.push(taskbarPin);
+    renderTaskbarPinList();
     updatePreview();
 }
 

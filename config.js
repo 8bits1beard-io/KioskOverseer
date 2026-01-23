@@ -343,6 +343,7 @@ const actionHandlers = {
     movePinUp,
     movePinDown,
     duplicatePin,
+    copyPinToTaskbar,
     addTaskbarPin,
     editTaskbarPin,
     saveTaskbarPin,
