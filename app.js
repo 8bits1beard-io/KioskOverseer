@@ -15,13 +15,15 @@ const SECTION_DEFS = [
     { key: 'win32Args', title: 'WIN32 APP ARGUMENTS' },
     { key: 'startMenuPins', title: 'START MENU PINS' },
     { key: 'taskbarLayout', title: 'TASKBAR PINS' },
+    { key: 'configSummary', title: 'CONFIGURATION SUMMARY' },
     { key: 'xmlPreview', title: 'XML PREVIEW' },
     { key: 'deployGuide', title: 'DEPLOYMENT GUIDE' },
     { key: 'navigation', title: 'NAVIGATION', showNumber: false },
     { key: 'navSetup', navLabel: 'STEP 1: KIOSK TYPE', showNumber: false },
     { key: 'navApplication', navLabel: 'STEP 2: ALLOWED APPLICATIONS', showNumber: false },
     { key: 'navStartmenu', navLabel: 'STEP 3: START MENU PINS', showNumber: false },
-    { key: 'navTaskbar', navLabel: 'STEP 4: TASKBAR PINS', showNumber: false }
+    { key: 'navTaskbar', navLabel: 'STEP 4: TASKBAR PINS', showNumber: false },
+    { key: 'navSummary', navLabel: 'STEP 5: SUMMARY', showNumber: false }
 ];
 
 const SECTION_START_INDEX = 1;
@@ -181,9 +183,10 @@ function updateTabVisibility() {
     const applicationTab = dom.get('tab-btn-application');
     const startMenuTab = dom.get('tab-btn-startmenu');
     const taskbarTab = dom.get('tab-btn-taskbar');
+    const summaryTab = dom.get('tab-btn-summary');
 
     // Show/hide tabs based on mode - both multi and restricted need these tabs
-    // Single mode hides Step 2 (Allowed Applications), Step 3 (Start Menu Pins), and Step 4 (Taskbar Pins)
+    // Single mode hides Step 2-5 (only Step 1: Kiosk Type is visible)
     if (applicationTab) {
         applicationTab.classList.toggle('hidden', !isMultiOrRestricted);
         applicationTab.disabled = !isMultiOrRestricted;
@@ -199,11 +202,16 @@ function updateTabVisibility() {
         taskbarTab.disabled = !isMultiOrRestricted;
         taskbarTab.setAttribute('aria-hidden', !isMultiOrRestricted);
     }
+    if (summaryTab) {
+        summaryTab.classList.toggle('hidden', !isMultiOrRestricted);
+        summaryTab.disabled = !isMultiOrRestricted;
+        summaryTab.setAttribute('aria-hidden', !isMultiOrRestricted);
+    }
 
-    // If switching to single mode and currently on Step 2, 3, or 4, switch back to Step 1 (Setup)
+    // If switching to single mode and currently on Step 2-5, switch back to Step 1 (Setup)
     if (!isMultiOrRestricted) {
         const activeTab = document.querySelector('.side-nav-btn.active');
-        if (activeTab && (activeTab.id === 'tab-btn-application' || activeTab.id === 'tab-btn-startmenu' || activeTab.id === 'tab-btn-taskbar')) {
+        if (activeTab && (activeTab.id === 'tab-btn-application' || activeTab.id === 'tab-btn-startmenu' || activeTab.id === 'tab-btn-taskbar' || activeTab.id === 'tab-btn-summary')) {
             switchTab('setup');
         }
     }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'self'; form-action 'self'">
     <title>Kiosk Overseer (Windows Kiosk Builder)</title>
-    <link rel="stylesheet" href="styles.css?v=1.1.8">
+    <link rel="stylesheet" href="styles.css?v=1.1.9">
     <link rel="icon" type="image/png" href="assets/logo-mksa.png">
 </head>
 <body>
@@ -15,7 +15,7 @@
     <header role="banner">
         <div class="header-top">
             <div class="header-system-label">
-                KIOSK OVERSEER // BUILD 1.1.8
+                KIOSK OVERSEER // BUILD 1.1.9
                 <button type="button" class="btn-secondary btn-small" id="themeToggle" data-action="toggleTheme">Theme: Fallout</button>
             </div>
             <nav class="header-actions command-strip" aria-label="Main actions">
@@ -35,6 +35,7 @@
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-application" id="tab-btn-application" data-action="switchTab" data-arg="application" data-section-key="navApplication">STEP 2: Allowed Applications</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-startmenu" id="tab-btn-startmenu" data-action="switchTab" data-arg="startmenu" data-section-key="navStartmenu">STEP 3: Start Menu Pins</button>
                 <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-taskbar" id="tab-btn-taskbar" data-action="switchTab" data-arg="taskbar" data-section-key="navTaskbar">STEP 4: Taskbar Pins</button>
+                <button type="button" class="side-nav-btn" role="tab" aria-selected="false" aria-controls="tab-summary" id="tab-btn-summary" data-action="switchTab" data-arg="summary" data-section-key="navSummary">STEP 5: Summary</button>
             </div>
             <div class="side-nav-logo" role="presentation">
                 <img src="assets/Fallout_MKSA.png" alt="MKSA">
@@ -1029,6 +1030,62 @@
                     </div>
                     <!-- End Taskbar Tab -->
 
+                    <!-- Summary Tab -->
+                    <div class="tab-content" role="tabpanel" id="tab-summary" aria-labelledby="tab-btn-summary">
+                        <fieldset class="section">
+                            <legend class="section-header" data-section-key="configSummary"></legend>
+                            <div class="section-content">
+                                <div class="preview-meta" role="group" aria-label="Configuration summary">
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Profile</div>
+                                        <div class="preview-meta-value" id="previewProfileName">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Kiosk Mode</div>
+                                        <div class="preview-meta-value" id="previewKioskMode">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Allowed Apps</div>
+                                        <div class="preview-meta-value" id="previewAllowedApps">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Start Pins</div>
+                                        <div class="preview-meta-value" id="previewStartPins">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Taskbar Pins</div>
+                                        <div class="preview-meta-value" id="previewToolbarPins">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Show Taskbar</div>
+                                        <div class="preview-meta-value" id="previewShowTaskbar">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">File Explorer</div>
+                                        <div class="preview-meta-value" id="previewFileExplorer">—</div>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <div class="preview-meta-label">Auto Logon</div>
+                                        <div class="preview-meta-value" id="previewAutoLogon">—</div>
+                                    </div>
+                                </div>
+
+                                <div id="validationStatus" role="status" aria-live="polite" aria-atomic="true" style="margin: 16px 0;"></div>
+
+                                <div class="sub-panel" style="margin-top: 16px;">
+                                    <div class="sub-panel-title">EXPORT</div>
+                                    <div class="preview-actions" role="group" aria-label="Export options">
+                                        <button type="button" class="btn-primary" data-action="downloadXml">Download XML</button>
+                                        <button type="button" class="btn-secondary" data-action="copyXml">Copy XML to Clipboard</button>
+                                        <button type="button" class="btn-secondary" data-action="downloadPowerShell" title="All-in-one script: applies XML, creates shortcuts, configures the kiosk.">All-In-One Script</button>
+                                        <button type="button" class="btn-secondary" data-action="downloadEdgeManifestWorkaround" title="Helps Windows honor Edge shortcut icons">Manifest Override</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <!-- End Summary Tab -->
+
                 </div>
                 <!-- End tab-panels -->
             </div>
@@ -1040,49 +1097,6 @@
                 <span data-section-key="xmlPreview"></span>
             </h2>
             <div class="panel-content preview-content">
-                <div class="preview-meta" role="group" aria-label="XML preview metadata">
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Profile</div>
-                        <div class="preview-meta-value" id="previewProfileName">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Kiosk Mode</div>
-                        <div class="preview-meta-value" id="previewKioskMode">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Allowed Apps</div>
-                        <div class="preview-meta-value" id="previewAllowedApps">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Start Pins</div>
-                        <div class="preview-meta-value" id="previewStartPins">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Toolbar Pins</div>
-                        <div class="preview-meta-value" id="previewToolbarPins">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Generated</div>
-                        <div class="preview-meta-value" id="previewGeneratedDate">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Status</div>
-                        <div class="preview-meta-value" id="previewStatus">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Show Taskbar</div>
-                        <div class="preview-meta-value" id="previewShowTaskbar">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">File Explorer</div>
-                        <div class="preview-meta-value" id="previewFileExplorer">—</div>
-                    </div>
-                    <div class="preview-meta-item">
-                        <div class="preview-meta-label">Auto Logon</div>
-                        <div class="preview-meta-value" id="previewAutoLogon">—</div>
-                    </div>
-                </div>
-                <div id="validationStatus" role="status" aria-live="polite" aria-atomic="true"></div>
                 <div class="xml-legend" id="xmlLegend" role="group" aria-label="XML section color legend">
                     <div class="xml-legend-item" id="legend-profile">
                         <span class="xml-legend-color profile"></span>
@@ -1116,12 +1130,6 @@
                         <span class="xml-legend-color configs"></span>
                         <span>Account Config</span>
                     </div>
-                </div>
-                <div class="preview-actions" role="group" aria-label="Export options">
-                    <button type="button" class="btn-primary btn-small" data-action="downloadXml">Download XML</button>
-                    <button type="button" class="btn-secondary btn-small" data-action="copyXml">Copy to Clipboard</button>
-                    <button type="button" class="btn-secondary btn-small" data-action="downloadPowerShell" title="All-in-one script: applies XML, creates shortcuts, configures the kiosk. Use -ShortcutsOnly flag for shortcuts only.">All-In-One Script</button>
-                    <button type="button" class="btn-secondary btn-small" data-action="downloadEdgeManifestWorkaround" title="Helps Windows honor Edge shortcut icons">Manifest Override</button>
                 </div>
                 <pre class="xml-preview crt-terminal crt-pane" id="xmlPreview" aria-label="Generated XML configuration" tabindex="0">
                     <!-- XML will be rendered here -->
@@ -1310,14 +1318,14 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.1.8"></script>
-    <script src="state.js?v=1.1.8"></script>
-    <script src="helpers.js?v=1.1.8"></script>
-    <script src="xml.js?v=1.1.8"></script>
-    <script src="validation.js?v=1.1.8"></script>
-    <script src="app.js?v=1.1.8"></script>
-    <script src="apps.js?v=1.1.8"></script>
-    <script src="pins.js?v=1.1.8"></script>
-    <script src="config.js?v=1.1.8"></script>
+    <script src="dom.js?v=1.1.9"></script>
+    <script src="state.js?v=1.1.9"></script>
+    <script src="helpers.js?v=1.1.9"></script>
+    <script src="xml.js?v=1.1.9"></script>
+    <script src="validation.js?v=1.1.9"></script>
+    <script src="app.js?v=1.1.9"></script>
+    <script src="apps.js?v=1.1.9"></script>
+    <script src="pins.js?v=1.1.9"></script>
+    <script src="config.js?v=1.1.9"></script>
 </body>
 </html>
