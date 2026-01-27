@@ -197,7 +197,7 @@ function applyConfigSnapshot(payload) {
     updateBreakoutUI();
     updateWallpaperVisibility();
     updateWallpaperTypeUI();
-    updateWatchdogUI();
+    updateSentryUI();
     updatePreview();
 }
 
@@ -230,10 +230,10 @@ function loadPreset(preset) {
     dom.get('wallpaperImagePath').value = '';
     updateWallpaperTypeUI();
 
-    // Reset watchdog config
-    dom.get('enableWatchdog').checked = false;
-    dom.get('watchdogInterval').value = '10';
-    updateWatchdogUI();
+    // Reset sentry config
+    dom.get('enableSentry').checked = false;
+    dom.get('sentryInterval').value = '10';
+    updateSentryUI();
 
     switch (preset) {
         case 'blank':
@@ -376,7 +376,7 @@ const actionHandlers = {
     dismissCallout,
     toggleTheme,
     updateWallpaperTypeUI,
-    updateWatchdogUI
+    updateSentryUI
 };
 
 // Debounce guard for download actions to prevent double-triggering

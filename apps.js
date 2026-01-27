@@ -208,11 +208,11 @@ function updateAutoLaunchSelection() {
 function updateMultiAppEdgeUI() {
     const edgeConfig = dom.get('multiAppEdgeConfig');
     const win32ArgsConfig = dom.get('win32ArgsConfig');
-    const watchdogOptions = dom.get('watchdogOptions');
+    const sentryOptions = dom.get('sentryOptions');
 
     let showEdgeConfig = false;
     let showWin32Args = false;
-    let showWatchdog = false;
+    let showSentry = false;
 
     if (state.autoLaunchApp !== null && state.allowedApps[state.autoLaunchApp]) {
         const app = state.allowedApps[state.autoLaunchApp];
@@ -222,7 +222,7 @@ function updateMultiAppEdgeUI() {
             showWin32Args = true;
         }
         if (app.type === 'path') {
-            showWatchdog = true;
+            showSentry = true;
         }
     }
 
@@ -232,12 +232,12 @@ function updateMultiAppEdgeUI() {
     win32ArgsConfig.classList.toggle('hidden', !showWin32Args);
     win32ArgsConfig.setAttribute('aria-hidden', !showWin32Args);
 
-    if (watchdogOptions) {
-        watchdogOptions.classList.toggle('hidden', !showWatchdog);
-        if (!showWatchdog) {
-            const checkbox = dom.get('enableWatchdog');
+    if (sentryOptions) {
+        sentryOptions.classList.toggle('hidden', !showSentry);
+        if (!showSentry) {
+            const checkbox = dom.get('enableSentry');
             if (checkbox) checkbox.checked = false;
-            updateWatchdogUI();
+            updateSentryUI();
         }
     }
 }

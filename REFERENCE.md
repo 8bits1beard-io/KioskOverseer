@@ -41,7 +41,7 @@ Technical reference for Kiosk Overseer.
 5. Configure taskbar pins (optional): add apps to appear on the taskbar
 6. Configure **Taskbar** and **File Explorer** settings in Setup
 7. Optionally configure **Desktop Wallpaper** (solid color or image path on target device)
-8. Optionally enable **App Watchdog** (in the auto-launch section) to relaunch the auto-launch app if closed by idle timeout
+8. Optionally enable **KioskOverseer Sentry** (in the auto-launch section) to relaunch the auto-launch app if closed by idle timeout
 9. Configure account (Auto-logon or Existing Account)
 10. Export
 
@@ -103,7 +103,7 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
    - Enables diagnostic event log channels (Assigned Access, AppLocker, AppXDeployment) for troubleshooting
    - Creates shortcuts in `%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\` for Start and Taskbar pins
    - Configures desktop wallpaper if set (solid color BMP or image path, applied via Active Setup for all users)
-   - Creates App Watchdog scheduled task if enabled (monitors and relaunches auto-launch app)
+   - Creates KioskOverseer Sentry scheduled task if enabled (monitors and relaunches auto-launch app)
    - Applies configuration via WMI (`MDM_AssignedAccess`)
    - Generates CMTrace-compatible log file with timestamps and execution details in `%ProgramData%\KioskOverseer\Logs`
 4. Reboot

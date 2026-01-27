@@ -253,9 +253,9 @@ function updateWallpaperTypeUI() {
     if (imageGroup) imageGroup.classList.toggle('hidden', type !== 'image');
 }
 
-function updateWatchdogUI() {
-    const enabled = dom.get('enableWatchdog').checked;
-    const intervalGroup = dom.get('watchdogIntervalGroup');
+function updateSentryUI() {
+    const enabled = dom.get('enableSentry').checked;
+    const intervalGroup = dom.get('sentryIntervalGroup');
     if (intervalGroup) intervalGroup.classList.toggle('hidden', !enabled);
 }
 
@@ -868,7 +868,7 @@ function getMultiAppEdgeUrl() {
     );
 }
 
-function getWatchdogAppInfo() {
+function getSentryAppInfo() {
     if (state.autoLaunchApp === null) return null;
     const app = state.allowedApps[state.autoLaunchApp];
     if (!app || app.type !== 'path') return null;
@@ -1195,12 +1195,12 @@ function downloadPowerShell() {
 `;
     }
 
-    // Generate App Watchdog scheduled task block
-    let watchdogPs = '';
-    if (state.mode !== 'single' && dom.get('enableWatchdog').checked) {
-        const appInfo = getWatchdogAppInfo();
+    // Generate KioskOverseer Sentry scheduled task block
+    let sentryPs = '';
+    if (state.mode !== 'single' && dom.get('enableSentry').checked) {
+        const appInfo = getSentryAppInfo();
         if (appInfo) {
-            const interval = Math.max(5, parseInt(dom.get('watchdogInterval').value) || 10);
+            const interval = Math.max(5, parseInt(dom.get('sentryInterval').value) || 10);
             const escapedPath = appInfo.exePath.replace(/'/g, "''");
             const escapedArgs = appInfo.launchArgs.replace(/'/g, "''");
             const pName = appInfo.processName;
@@ -1208,22 +1208,22 @@ function downloadPowerShell() {
                 ? `$running = Get-Process -Name $processName -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }`
                 : `$running = Get-Process -Name $processName -ErrorAction SilentlyContinue`;
 
-            watchdogPs = `
-    # App Watchdog - Create scheduled task to relaunch app if closed
+            sentryPs = `
+    # KioskOverseer Sentry - Create scheduled task to relaunch app if closed
     if (-not $ShortcutsOnly) {
-        Write-Log -Action "App Watchdog" -Status "Info" -Message "Creating scheduled task for ${pName}"
+        Write-Log -Action "KioskOverseer Sentry" -Status "Info" -Message "Creating scheduled task for ${pName}"
         try {
-            $watchdogTaskName = "KioskOverseer-AppWatchdog"
+            $sentryTaskName = "KioskOverseer-Sentry"
 
-            # Remove existing watchdog task if present
-            $existing = Get-ScheduledTask -TaskName $watchdogTaskName -ErrorAction SilentlyContinue
+            # Remove existing sentry task if present
+            $existing = Get-ScheduledTask -TaskName $sentryTaskName -ErrorAction SilentlyContinue
             if ($existing) {
-                Unregister-ScheduledTask -TaskName $watchdogTaskName -Confirm:$false
-                Write-Log -Action "Removed existing watchdog task" -Status "Info"
+                Unregister-ScheduledTask -TaskName $sentryTaskName -Confirm:$false
+                Write-Log -Action "Removed existing sentry task" -Status "Info"
             }
 
-            $watchdogScript = @'
-# KioskOverseer App Watchdog
+            $sentryScript = @'
+# KioskOverseer Sentry
 $processName = '${pName}'
 $exePath = [Environment]::ExpandEnvironmentVariables('${escapedPath}')
 $launchArgs = '${escapedArgs}'
@@ -1245,9 +1245,9 @@ while ($true) {
                 $lastLaunch = $now
             } catch {
                 $errMsg = $_.Exception.Message
-                $errLog = Join-Path $env:ProgramData "KioskOverseer\\Logs\\AppWatchdog.log"
+                $errLog = Join-Path $env:ProgramData "KioskOverseer\\Logs\\KioskOverseer-Sentry.log"
                 $now = Get-Date
-                $line = '<![LOG[Failed to relaunch: {0}]LOG]!><time="{1}" date="{2}" component="AppWatchdog" context="" type="3" thread="{3}" file="">' -f $errMsg, $now.ToString("HH:mm:ss.fffzz00"), $now.ToString("MM-dd-yyyy"), [System.Threading.Thread]::CurrentThread.ManagedThreadId
+                $line = '<![LOG[Failed to relaunch: {0}]LOG]!><time="{1}" date="{2}" component="KioskOverseer-Sentry" context="" type="3" thread="{3}" file="">' -f $errMsg, $now.ToString("HH:mm:ss.fffzz00"), $now.ToString("MM-dd-yyyy"), [System.Threading.Thread]::CurrentThread.ManagedThreadId
                 $line | Out-File -Append -FilePath $errLog -Encoding UTF8
             }
         }
@@ -1255,23 +1255,23 @@ while ($true) {
 }
 '@
 
-            $watchdogPath = Join-Path $env:ProgramData "KioskOverseer\\AppWatchdog.ps1"
-            $watchdogDir = Split-Path $watchdogPath
-            if (-not (Test-Path $watchdogDir)) {
-                New-Item -ItemType Directory -Path $watchdogDir -Force | Out-Null
+            $sentryPath = Join-Path $env:ProgramData "KioskOverseer\\KioskOverseer-Sentry.ps1"
+            $sentryDir = Split-Path $sentryPath
+            if (-not (Test-Path $sentryDir)) {
+                New-Item -ItemType Directory -Path $sentryDir -Force | Out-Null
             }
-            Set-Content -Path $watchdogPath -Value $watchdogScript -Encoding UTF8
+            Set-Content -Path $sentryPath -Value $sentryScript -Encoding UTF8
 
-            $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \`"$watchdogPath\`""
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \`"$sentryPath\`""
             $trigger = New-ScheduledTaskTrigger -AtLogOn
             $principal = New-ScheduledTaskPrincipal -GroupId "BUILTIN\\Users" -RunLevel Limited
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 
-            Register-ScheduledTask -TaskName $watchdogTaskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "KioskOverseer App Watchdog - Relaunches app if closed" -Force | Out-Null
+            Register-ScheduledTask -TaskName $sentryTaskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "KioskOverseer Sentry - Relaunches app if closed" -Force | Out-Null
 
-            Write-Log -Action "App Watchdog created" -Status "Success" -Message "Task: $watchdogTaskName, Process: ${pName}, Interval: ${interval}s"
+            Write-Log -Action "KioskOverseer Sentry created" -Status "Success" -Message "Task: $sentryTaskName, Process: ${pName}, Interval: ${interval}s"
         } catch {
-            Write-Log -Action "App Watchdog" -Status "Warning" -Message $_.Exception.Message
+            Write-Log -Action "KioskOverseer Sentry" -Status "Warning" -Message $_.Exception.Message
         }
     }
 `;
@@ -1480,7 +1480,7 @@ catch {
 try {
     Write-Log -Action "Starting deployment" -Status "Info" -Message "Target: $env:COMPUTERNAME"
 ${wallpaperPs}
-${watchdogPs}
+${sentryPs}
     # Skip audit logging setup in ShortcutsOnly mode
     if (-not $ShortcutsOnly) {
         # Enable audit logging for process creation and command-line capture
@@ -2253,19 +2253,19 @@ function generateReadme() {
             }
         }
 
-        // App watchdog
-        const watchdogEnabled = dom.get('enableWatchdog').checked;
-        if (watchdogEnabled) {
-            const interval = dom.get('watchdogInterval').value;
-            const appInfo = getWatchdogAppInfo();
-            readme += `## App Watchdog\n\n`;
+        // KioskOverseer Sentry
+        const sentryEnabled = dom.get('enableSentry').checked;
+        if (sentryEnabled) {
+            const interval = dom.get('sentryInterval').value;
+            const appInfo = getSentryAppInfo();
+            readme += `## KioskOverseer Sentry\n\n`;
             readme += `**Poll Interval:** ${interval} seconds\n`;
             if (appInfo) {
                 readme += `**Monitored Process:** ${appInfo.processName}\n`;
             } else {
                 readme += `**Monitored Process:** (requires auto-launch app with executable path)\n`;
             }
-            readme += `**Task Name:** \`KioskOverseer-AppWatchdog\`\n\n`;
+            readme += `**Task Name:** \`KioskOverseer-Sentry\`\n\n`;
         }
     }
 

@@ -101,7 +101,7 @@ There is currently no automated test framework. Testing is done manually:
 5. **Test validation** (trigger errors, verify messages)
 6. **Test both themes** (Fallout and Fluent)
 7. **Test wallpaper settings** (solid color, image path — visible in multi-app/restricted modes only)
-8. **Test browser watchdog** (enable toggle, interval field, scheduled task in PowerShell export)
+8. **Test KioskOverseer Sentry** (enable toggle, interval field, scheduled task in PowerShell export)
 9. **Test accessibility** (screen reader output, keyboard navigation, contrast ratios in both themes)
 
 If you add automated tests, please document the test runner and execution instructions.

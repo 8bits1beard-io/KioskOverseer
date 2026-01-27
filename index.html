@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'self'; form-action 'self'">
     <title>Kiosk Overseer (Windows Kiosk Builder)</title>
-    <link rel="stylesheet" href="styles.css?v=1.4.1">
+    <link rel="stylesheet" href="styles.css?v=1.4.2">
     <link rel="icon" type="image/png" href="assets/logo-mksa.png">
 </head>
 <body>
@@ -15,7 +15,7 @@
     <header role="banner">
         <div class="header-top">
             <div class="header-system-label">
-                KIOSK OVERSEER // BUILD 1.4.1
+                KIOSK OVERSEER // BUILD 1.4.2
                 <button type="button" class="btn-secondary btn-small" id="themeToggle" data-action="toggleTheme">Theme: Fallout</button>
             </div>
             <nav class="header-actions command-strip" aria-label="Main actions">
@@ -574,28 +574,28 @@
                                     <option value="">None (show Start menu)</option>
                                 </select>
                             </div>
-                            <div id="watchdogOptions" class="hidden">
+                            <div id="sentryOptions" class="hidden">
                                 <div class="form-group">
                                     <div class="checkbox-group">
                                         <span class="toggle-switch">
-                                            <input type="checkbox" role="switch" id="enableWatchdog" data-change="updateWatchdogUI|updatePreview">
+                                            <input type="checkbox" role="switch" id="enableSentry" data-change="updateSentryUI|updatePreview">
                                             <span class="toggle-slider" aria-hidden="true"></span>
                                         </span>
-                                        <label for="enableWatchdog" class="with-tooltip">
+                                        <label for="enableSentry" class="with-tooltip">
                                             Relaunch if Closed
-                                            <button type="button" class="tooltip-icon" aria-label="Help for App Watchdog" aria-describedby="watchdog-tooltip">?</button>
-                                            <span class="tooltip-content" id="watchdog-tooltip" role="tooltip">Creates a Windows Scheduled Task that monitors the auto-launch app process. If the app is closed (e.g., by an Intune idle timeout policy), it is automatically relaunched with the configured arguments.</span>
+                                            <button type="button" class="tooltip-icon" aria-label="Help for App Sentry" aria-describedby="sentry-tooltip">?</button>
+                                            <span class="tooltip-content" id="sentry-tooltip" role="tooltip">Creates a Windows Scheduled Task that monitors the auto-launch app process. If the app is closed (e.g., by an Intune idle timeout policy), it is automatically relaunched with the configured arguments.</span>
                                         </label>
                                     </div>
                                 </div>
-                                <div id="watchdogIntervalGroup" class="hidden">
+                                <div id="sentryIntervalGroup" class="hidden">
                                     <div class="form-group">
-                                        <label for="watchdogInterval" class="with-tooltip">
+                                        <label for="sentryInterval" class="with-tooltip">
                                             Poll Interval (seconds)
-                                            <button type="button" class="tooltip-icon" aria-label="Help for Poll Interval" aria-describedby="watchdogInterval-tooltip">?</button>
-                                            <span class="tooltip-content" id="watchdogInterval-tooltip" role="tooltip">How frequently the watchdog checks if the app is running. Lower values mean faster relaunch but slightly more CPU usage. A 10-second cooldown prevents restart loops regardless of this setting.</span>
+                                            <button type="button" class="tooltip-icon" aria-label="Help for Poll Interval" aria-describedby="sentryInterval-tooltip">?</button>
+                                            <span class="tooltip-content" id="sentryInterval-tooltip" role="tooltip">How frequently the sentry checks if the app is running. Lower values mean faster relaunch but slightly more CPU usage. A 10-second cooldown prevents restart loops regardless of this setting.</span>
                                         </label>
-                                        <input type="number" id="watchdogInterval" value="10" min="5" step="1">
+                                        <input type="number" id="sentryInterval" value="10" min="5" step="1">
                                     </div>
                                 </div>
                             </div>
@@ -1339,14 +1339,14 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.4.1"></script>
-    <script src="state.js?v=1.4.1"></script>
-    <script src="helpers.js?v=1.4.1"></script>
-    <script src="xml.js?v=1.4.1"></script>
-    <script src="validation.js?v=1.4.1"></script>
-    <script src="app.js?v=1.4.1"></script>
-    <script src="apps.js?v=1.4.1"></script>
-    <script src="pins.js?v=1.4.1"></script>
-    <script src="config.js?v=1.4.1"></script>
+    <script src="dom.js?v=1.4.2"></script>
+    <script src="state.js?v=1.4.2"></script>
+    <script src="helpers.js?v=1.4.2"></script>
+    <script src="xml.js?v=1.4.2"></script>
+    <script src="validation.js?v=1.4.2"></script>
+    <script src="app.js?v=1.4.2"></script>
+    <script src="apps.js?v=1.4.2"></script>
+    <script src="pins.js?v=1.4.2"></script>
+    <script src="config.js?v=1.4.2"></script>
 </body>
 </html>

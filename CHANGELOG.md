@@ -6,19 +6,19 @@ All notable changes to Kiosk Overseer are documented here.
 
 ### Fixed
 - Wallpaper not applying to kiosk user: replaced registry hive writes with Active Setup so wallpaper is set in the correct user context at logon
-- App Watchdog not relaunching Edge: browser child processes fooled the simple process check; now uses `MainWindowHandle` filter for browsers
-- App Watchdog generalized to support any Win32 app, not just browsers
+- KioskOverseer Sentry not relaunching Edge: browser child processes fooled the simple process check; now uses `MainWindowHandle` filter for browsers
+- KioskOverseer Sentry generalized to support any Win32 app, not just browsers
 
 ### Added
 - Diagnostic event log enablement: deployment script now enables Assigned Access, AppLocker, and AppXDeployment log channels for troubleshooting blocked apps
 - Privacy section in README confirming all processing is client-side with no data collection
 
 ### Changed
-- App Watchdog moved from standalone Setup tab section into the auto-launch area of the Allowed Apps step
-- App Watchdog renamed from "Browser Watchdog" to "App Watchdog" throughout (UI, PowerShell task, logs)
+- KioskOverseer Sentry moved from standalone Setup tab section into the auto-launch area of the Allowed Apps step
+- KioskOverseer Sentry renamed from "Browser Watchdog" to "KioskOverseer Sentry" throughout (UI, PowerShell task, logs)
 - Wallpaper deployment uses Active Setup (`HKLM\...\Active Setup\Installed Components`) instead of direct registry hive manipulation
 - XML preview simplified: removed syntax coloring, section highlighting, and color legend
-- PowerShell task renamed from `KioskOverseer-BrowserWatchdog` to `KioskOverseer-AppWatchdog`
+- PowerShell task renamed from `KioskOverseer-BrowserWatchdog` to `KioskOverseer-Sentry`
 
 ## [1.3.4] - 2026-01-27
 
@@ -30,7 +30,7 @@ All notable changes to Kiosk Overseer are documented here.
 ### Added
 - Taskbar Pins section in Configuration Summary
 - Desktop Wallpaper section in Configuration Summary (solid color or image path)
-- App Watchdog section in Configuration Summary (process name, poll interval, task name)
+- KioskOverseer Sentry section in Configuration Summary (process name, poll interval, task name)
 - App type labels (Win32/UWP) in allowed applications list
 - Edge source type (URL vs Local File) shown in browser settings
 - Code-formatted paths and GUIDs for readability
@@ -56,11 +56,11 @@ All notable changes to Kiosk Overseer are documented here.
 
 ### Added
 - Desktop wallpaper configuration for multi-app and restricted kiosk modes (solid color or image path)
-- App Watchdog feature: optional scheduled task that monitors and relaunches the auto-launch app if closed (e.g., by Intune idle timeout policy)
+- KioskOverseer Sentry feature: optional scheduled task that monitors and relaunches the auto-launch app if closed (e.g., by Intune idle timeout policy)
 - Color picker input styling for wallpaper configuration
 
 ### Changed
-- PowerShell deployment script now includes wallpaper registry configuration and app watchdog scheduled task creation when enabled
+- PowerShell deployment script now includes wallpaper registry configuration and KioskOverseer Sentry scheduled task creation when enabled
 
 ## [1.2.8] - 2026-01-23
 
