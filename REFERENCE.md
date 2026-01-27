@@ -100,11 +100,12 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
 3. The script performs:
    - Pre-flight checks (Windows edition, SYSTEM context via SID S-1-5-18, WMI availability)
    - Enables process creation auditing, command-line capture, and sets Security log size to 512MB (best effort)
+   - Enables diagnostic event log channels (Assigned Access, AppLocker, AppXDeployment) for troubleshooting
    - Creates shortcuts in `%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\` for Start and Taskbar pins
-   - Configures desktop wallpaper if set (solid color via registry or image path)
+   - Configures desktop wallpaper if set (solid color BMP or image path, applied via Active Setup for all users)
    - Creates App Watchdog scheduled task if enabled (monitors and relaunches auto-launch app)
    - Applies configuration via WMI (`MDM_AssignedAccess`)
-   - Generates CMTrace-compatible log file with timestamps and execution details in `%ProgramData%\\KioskOverseer\\Logs`
+   - Generates CMTrace-compatible log file with timestamps and execution details in `%ProgramData%\KioskOverseer\Logs`
 4. Reboot
 
 **Shortcut-Only Script (Intune/OMA-URI):**
@@ -135,8 +136,25 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
 | Auto-launch app not starting | App not in AllowedApps list | Ensure the auto-launch app is also added to the allowed applications list |
 | SYSTEM context check fails | Script not running as SYSTEM | Use `psexec -i -s` to run PowerShell as SYSTEM |
 | "Unsupported edition" error | Windows Home edition | Kiosk mode requires Pro, Enterprise, or Education |
+| "This app has been blocked" popup | An executable not in the allowed apps list was launched | Check AppLocker event logs (see below) to identify the blocked app, then add it to allowed apps |
+| Wallpaper not applying | Active Setup runs at next user logon | Reboot the device after running the deployment script; the wallpaper applies when the kiosk user signs in |
 
-**Diagnostic logs:** `Event Viewer > Applications and Services Logs > Microsoft > Windows > AssignedAccess`
+### Diagnostic Event Logs
+
+The deployment script enables these event log channels automatically. Open **Event Viewer > Applications and Services Logs > Microsoft > Windows** to find them:
+
+| Log Channel | What to Look For |
+|-------------|------------------|
+| **AssignedAccess/Operational** | Profile applied/failed, shell launch events, kiosk errors |
+| **AssignedAccess/Admin** | Admin-level kiosk configuration errors |
+| **AppLocker/EXE and DLL** | Event ID 8004 shows which .exe was blocked — use this to diagnose "this app was blocked" popups |
+| **AppLocker/MSI and Script** | Blocked MSI installers or scripts |
+| **AppLocker/Packaged app-Execution** | Blocked UWP/Store app launches |
+| **AppLocker/Packaged app-Deployment** | Blocked UWP app deployments |
+| **AppXDeployment/Operational** | UWP app activation failures |
+| **AppXDeploymentServer/Operational** | UWP deployment server errors |
+
+**Deployment logs:** `%ProgramData%\KioskOverseer\Logs\` (CMTrace-compatible format)
 
 **Remove configuration:** `Clear-AssignedAccess` cmdlet or unassign Intune profile
 
