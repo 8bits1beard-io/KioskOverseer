@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'self'; form-action 'self'">
     <title>Kiosk Overseer (Windows Kiosk Builder)</title>
-    <link rel="stylesheet" href="styles.css?v=1.3.9">
+    <link rel="stylesheet" href="styles.css?v=1.4.0">
     <link rel="icon" type="image/png" href="assets/logo-mksa.png">
 </head>
 <body>
@@ -15,7 +15,7 @@
     <header role="banner">
         <div class="header-top">
             <div class="header-system-label">
-                KIOSK OVERSEER // BUILD 1.3.9
+                KIOSK OVERSEER // BUILD 1.4.0
                 <button type="button" class="btn-secondary btn-small" id="themeToggle" data-action="toggleTheme">Theme: Fallout</button>
             </div>
             <nav class="header-actions command-strip" aria-label="Main actions">
@@ -1152,40 +1152,6 @@
                 <span data-section-key="xmlPreview"></span>
             </h2>
             <div class="panel-content preview-content">
-                <div class="xml-legend" id="xmlLegend" role="group" aria-label="XML section color legend">
-                    <div class="xml-legend-item" id="legend-profile">
-                        <span class="xml-legend-color profile"></span>
-                        <span>Profile</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-kioskapp">
-                        <span class="xml-legend-color kioskapp"></span>
-                        <span>Kiosk App</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-allowedapps">
-                        <span class="xml-legend-color allowedapps"></span>
-                        <span>Allowed Apps</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-fileexplorer">
-                        <span class="xml-legend-color fileexplorer"></span>
-                        <span>File Explorer</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-startpins">
-                        <span class="xml-legend-color startpins"></span>
-                        <span>Start Pins</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-taskbar">
-                        <span class="xml-legend-color taskbar"></span>
-                        <span>Taskbar</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-breakout">
-                        <span class="xml-legend-color breakout"></span>
-                        <span>Breakout Key</span>
-                    </div>
-                    <div class="xml-legend-item" id="legend-configs">
-                        <span class="xml-legend-color configs"></span>
-                        <span>Account Config</span>
-                    </div>
-                </div>
                 <pre class="xml-preview crt-terminal crt-pane" id="xmlPreview" aria-label="Generated XML configuration" tabindex="0">
                     <!-- XML will be rendered here -->
                 </pre>
@@ -1373,14 +1339,14 @@ Set-CimInstance -CimInstance $bridge -Property @{Configuration = $xml}</pre>
         </div>
     </div>
 
-    <script src="dom.js?v=1.3.9"></script>
-    <script src="state.js?v=1.3.9"></script>
-    <script src="helpers.js?v=1.3.9"></script>
-    <script src="xml.js?v=1.3.9"></script>
-    <script src="validation.js?v=1.3.9"></script>
-    <script src="app.js?v=1.3.9"></script>
-    <script src="apps.js?v=1.3.9"></script>
-    <script src="pins.js?v=1.3.9"></script>
-    <script src="config.js?v=1.3.9"></script>
+    <script src="dom.js?v=1.4.0"></script>
+    <script src="state.js?v=1.4.0"></script>
+    <script src="helpers.js?v=1.4.0"></script>
+    <script src="xml.js?v=1.4.0"></script>
+    <script src="validation.js?v=1.4.0"></script>
+    <script src="app.js?v=1.4.0"></script>
+    <script src="apps.js?v=1.4.0"></script>
+    <script src="pins.js?v=1.4.0"></script>
+    <script src="config.js?v=1.4.0"></script>
 </body>
 </html>

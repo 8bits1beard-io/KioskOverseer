@@ -1018,132 +1018,6 @@ function getExportStatus() {
  * @param {string} xml - The raw XML string
  * @returns {string} HTML string with colored sections
  */
-function colorizeXml(xml) {
-    // First, escape HTML entities to prevent XSS
-    let html = xml
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-
-    // Define section patterns and their CSS classes
-    // Order matters - more specific patterns should come first
-    const sections = [
-        // KioskModeApp (single-app) - match the whole line
-        {
-            pattern: /^(\s*&lt;KioskModeApp[^&]*\/&gt;)$/gm,
-            class: 'xml-section-kioskapp'
-        },
-        // BreakoutSequence - match the whole line
-        {
-            pattern: /^(\s*&lt;v4:BreakoutSequence[^&]*\/&gt;)$/gm,
-            class: 'xml-section-breakout'
-        },
-        // AllAppsList section (multi-line)
-        {
-            pattern: /(&lt;AllAppsList&gt;[\s\S]*?&lt;\/AllAppsList&gt;)/g,
-            class: 'xml-section-allowedapps'
-        },
-        // FileExplorerNamespaceRestrictions section
-        {
-            pattern: /(&lt;rs5:FileExplorerNamespaceRestrictions&gt;[\s\S]*?&lt;\/rs5:FileExplorerNamespaceRestrictions&gt;)/g,
-            class: 'xml-section-fileexplorer'
-        },
-        // StartPins section
-        {
-            pattern: /(&lt;v5:StartPins&gt;[\s\S]*?&lt;\/v5:StartPins&gt;)/g,
-            class: 'xml-section-startpins'
-        },
-        // Taskbar settings (both Taskbar and TaskbarLayout)
-        {
-            pattern: /^(\s*&lt;Taskbar[^&]*\/&gt;)$/gm,
-            class: 'xml-section-taskbar'
-        },
-        {
-            pattern: /(&lt;v5:TaskbarLayout&gt;[\s\S]*?&lt;\/v5:TaskbarLayout&gt;)/g,
-            class: 'xml-section-taskbar'
-        },
-        // Profile wrapper (opening and closing)
-        {
-            pattern: /^(\s*&lt;Profile[^\/&]*&gt;)$/gm,
-            class: 'xml-section-profile'
-        },
-        {
-            pattern: /^(\s*&lt;\/Profile&gt;)$/gm,
-            class: 'xml-section-profile'
-        },
-        // Configs section
-        {
-            pattern: /(&lt;Configs&gt;[\s\S]*?&lt;\/Configs&gt;)/g,
-            class: 'xml-section-configs'
-        }
-    ];
-
-    // Apply section highlighting
-    sections.forEach(({ pattern, class: className }) => {
-        html = html.replace(pattern, `<span class="xml-section ${className}">$1</span>`);
-    });
-
-    // Apply syntax highlighting within sections
-    // XML declaration
-    html = html.replace(
-        /(&lt;\?xml[^?]*\?&gt;)/g,
-        '<span class="declaration">$1</span>'
-    );
-
-    // CDATA sections - highlight the markers and content separately
-    html = html.replace(
-        /(&lt;!\[CDATA\[)([\s\S]*?)(\]\]&gt;)/g,
-        '<span class="cdata">$1</span><span class="cdata-content">$2</span><span class="cdata">$3</span>'
-    );
-
-    // Comments
-    html = html.replace(
-        /(&lt;!--[\s\S]*?--&gt;)/g,
-        '<span class="comment">$1</span>'
-    );
-
-    // Opening/closing tags with attributes
-    // Match tag names
-    html = html.replace(
-        /(&lt;\/?)([\w:]+)/g,
-        '$1<span class="tag">$2</span>'
-    );
-
-    // Match attributes (name="value")
-    html = html.replace(
-        /\s([\w:]+)(=)(&quot;)([^&]*)(&quot;)/g,
-        ' <span class="attr">$1</span>$2$3<span class="value">$4</span>$5'
-    );
-
-    return html;
-}
-
-/**
- * Updates XML legend visibility based on current mode.
- * Shows only legend items relevant to the current configuration.
- */
-function updateXmlLegendVisibility() {
-    const legend = document.getElementById('xmlLegend');
-    if (!legend) return;
-
-    const isSingleApp = state.mode === 'single';
-
-    // Show/hide legend items based on mode
-    const items = {
-        'legend-kioskapp': isSingleApp,
-        'legend-allowedapps': !isSingleApp,
-        'legend-fileexplorer': !isSingleApp,
-        'legend-startpins': !isSingleApp && state.startPins.length > 0,
-        'legend-taskbar': !isSingleApp,
-        'legend-breakout': !!getBreakoutSequence()
-    };
-
-    Object.entries(items).forEach(([id, visible]) => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = visible ? '' : 'none';
-    });
-}
 
 /**
  * Checks if the configuration has minimum required fields to generate XML.
@@ -1189,18 +1063,14 @@ function updatePreview() {
     // Only show XML if config is ready, otherwise show placeholder
     if (isConfigReadyForPreview()) {
         const xml = generateXml();
-        dom.get('xmlPreview').innerHTML = colorizeXml(xml);
-        dom.get('xmlLegend').style.display = '';
+        dom.get('xmlPreview').textContent = xml;
     } else {
-        dom.get('xmlPreview').innerHTML = '<span class="declaration">Configure your kiosk settings above.\n\n' +
+        dom.get('xmlPreview').textContent = 'Configure your kiosk settings above.\n\n' +
             '1. Enter a Display Name (for auto-logon accounts)\n' +
             '2. Click "Generate" to create a Profile GUID\n' +
             '3. Configure your kiosk mode and apps\n\n' +
-            'The XML preview will appear here once the required fields are filled.</span>';
-        dom.get('xmlLegend').style.display = 'none';
+            'The XML preview will appear here once the required fields are filled.';
     }
-
-    updateXmlLegendVisibility();
     updateExportAvailability();
     updateExportDetectedGuidance();
     const isValid = showValidation();
