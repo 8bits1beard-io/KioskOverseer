@@ -104,7 +104,7 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
    - Configures desktop wallpaper if set (solid color via registry or image path)
    - Creates Browser Watchdog scheduled task if enabled (monitors and relaunches browser)
    - Applies configuration via WMI (`MDM_AssignedAccess`)
-   - Generates NDJSON log file with timestamps and execution details in `%ProgramData%\\KioskOverseer\\Logs`
+   - Generates CMTrace-compatible log file with timestamps and execution details in `%ProgramData%\\KioskOverseer\\Logs`
 4. Reboot
 
 **Shortcut-Only Script (Intune/OMA-URI):**
