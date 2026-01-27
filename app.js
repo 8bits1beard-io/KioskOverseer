@@ -1284,17 +1284,30 @@ function downloadPowerShell() {
         $bmp.Save($bmpPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
         $bmp.Dispose()
 
-        $regPath = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization"
-        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
-        Set-ItemProperty -Path $regPath -Name "DesktopImagePath" -Value $bmpPath -Force
-        Set-ItemProperty -Path $regPath -Name "DesktopImageStatus" -Value 1 -Force -Type DWord
+        # Apply wallpaper to Default User hive (applies to new profiles including kioskUser0)
+        $defaultHive = "C:\\Users\\Default\\NTUSER.DAT"
+        if (Test-Path $defaultHive) {
+            reg load "HKU\\DefaultUser" $defaultHive 2>$null
+            $defaultDesktop = "Registry::HKU\\DefaultUser\\Control Panel\\Desktop"
+            Set-ItemProperty -Path $defaultDesktop -Name "WallPaper" -Value $bmpPath -Force
+            Set-ItemProperty -Path $defaultDesktop -Name "WallpaperStyle" -Value "10" -Force
+            Set-ItemProperty -Path $defaultDesktop -Name "TileWallpaper" -Value "0" -Force
+            [gc]::Collect()
+            reg unload "HKU\\DefaultUser" 2>$null
+            Write-Log -Action "Default User wallpaper" -Status "Success" -Message "Applied to Default User hive"
+        }
 
-        $desktopPath = "HKCU:\\Control Panel\\Desktop"
-        Set-ItemProperty -Path $desktopPath -Name "WallPaper" -Value $bmpPath -Force
-        Set-ItemProperty -Path $desktopPath -Name "WallpaperStyle" -Value "10" -Force
-        Set-ItemProperty -Path $desktopPath -Name "TileWallpaper" -Value "0" -Force
+        # Apply wallpaper to all existing user profiles via HKU
+        $loadedSIDs = Get-ChildItem "Registry::HKU" | Where-Object { $_.Name -match 'S-1-5-21-.*[^_]$' } | Select-Object -ExpandProperty Name
+        foreach ($sid in $loadedSIDs) {
+            $userDesktop = "Registry::$sid\\Control Panel\\Desktop"
+            if (Test-Path $userDesktop) {
+                Set-ItemProperty -Path $userDesktop -Name "WallPaper" -Value $bmpPath -Force
+                Set-ItemProperty -Path $userDesktop -Name "WallpaperStyle" -Value "10" -Force
+                Set-ItemProperty -Path $userDesktop -Name "TileWallpaper" -Value "0" -Force
+            }
+        }
 
-        RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True
         Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Solid color ${hex} (${r} ${g} ${b}) via $bmpPath"
     } catch {
         Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
@@ -1311,17 +1324,30 @@ function downloadPowerShell() {
             Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message "Image not found: $imgPath"
         }
 
-        $regPath = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization"
-        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
-        Set-ItemProperty -Path $regPath -Name "DesktopImagePath" -Value $imgPath -Force
-        Set-ItemProperty -Path $regPath -Name "DesktopImageStatus" -Value 1 -Force -Type DWord
+        # Apply wallpaper to Default User hive (applies to new profiles including kioskUser0)
+        $defaultHive = "C:\\Users\\Default\\NTUSER.DAT"
+        if (Test-Path $defaultHive) {
+            reg load "HKU\\DefaultUser" $defaultHive 2>$null
+            $defaultDesktop = "Registry::HKU\\DefaultUser\\Control Panel\\Desktop"
+            Set-ItemProperty -Path $defaultDesktop -Name "WallPaper" -Value $imgPath -Force
+            Set-ItemProperty -Path $defaultDesktop -Name "WallpaperStyle" -Value "10" -Force
+            Set-ItemProperty -Path $defaultDesktop -Name "TileWallpaper" -Value "0" -Force
+            [gc]::Collect()
+            reg unload "HKU\\DefaultUser" 2>$null
+            Write-Log -Action "Default User wallpaper" -Status "Success" -Message "Applied to Default User hive"
+        }
 
-        $desktopPath = "HKCU:\\Control Panel\\Desktop"
-        Set-ItemProperty -Path $desktopPath -Name "WallPaper" -Value $imgPath -Force
-        Set-ItemProperty -Path $desktopPath -Name "WallpaperStyle" -Value "10" -Force
-        Set-ItemProperty -Path $desktopPath -Name "TileWallpaper" -Value "0" -Force
+        # Apply wallpaper to all existing user profiles via HKU
+        $loadedSIDs = Get-ChildItem "Registry::HKU" | Where-Object { $_.Name -match 'S-1-5-21-.*[^_]$' } | Select-Object -ExpandProperty Name
+        foreach ($sid in $loadedSIDs) {
+            $userDesktop = "Registry::$sid\\Control Panel\\Desktop"
+            if (Test-Path $userDesktop) {
+                Set-ItemProperty -Path $userDesktop -Name "WallPaper" -Value $imgPath -Force
+                Set-ItemProperty -Path $userDesktop -Name "WallpaperStyle" -Value "10" -Force
+                Set-ItemProperty -Path $userDesktop -Name "TileWallpaper" -Value "0" -Force
+            }
+        }
 
-        RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True
         Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Image: $imgPath"
     } catch {
         Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
