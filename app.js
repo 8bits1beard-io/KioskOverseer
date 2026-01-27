@@ -1271,7 +1271,7 @@ function downloadPowerShell() {
         const g = parseInt(hex.substring(3, 5), 16);
         const b = parseInt(hex.substring(5, 7), 16);
         wallpaperPs = `
-    # Configure desktop wallpaper - Solid Color (generate BMP image)
+    # Configure desktop wallpaper - Solid Color (generate BMP image + Active Setup)
     Write-Log -Action "Set desktop wallpaper" -Status "Info" -Message "Solid color: ${hex}"
     try {
         Add-Type -AssemblyName System.Drawing
@@ -1284,31 +1284,16 @@ function downloadPowerShell() {
         $bmp.Save($bmpPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
         $bmp.Dispose()
 
-        # Apply wallpaper to Default User hive (applies to new profiles including kioskUser0)
-        $defaultHive = "C:\\Users\\Default\\NTUSER.DAT"
-        if (Test-Path $defaultHive) {
-            reg load "HKU\\DefaultUser" $defaultHive 2>$null
-            $defaultDesktop = "Registry::HKU\\DefaultUser\\Control Panel\\Desktop"
-            Set-ItemProperty -Path $defaultDesktop -Name "WallPaper" -Value $bmpPath -Force
-            Set-ItemProperty -Path $defaultDesktop -Name "WallpaperStyle" -Value "10" -Force
-            Set-ItemProperty -Path $defaultDesktop -Name "TileWallpaper" -Value "0" -Force
-            [gc]::Collect()
-            reg unload "HKU\\DefaultUser" 2>$null
-            Write-Log -Action "Default User wallpaper" -Status "Success" -Message "Applied to Default User hive"
-        }
+        # Register Active Setup to apply wallpaper at each user's first logon
+        $asKey = "HKLM:\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components\\KioskOverseer-Wallpaper"
+        if (-not (Test-Path $asKey)) { New-Item -Path $asKey -Force | Out-Null }
+        $stubCmd = "reg add ""HKCU\\Control Panel\\Desktop"" /v WallPaper /t REG_SZ /d ""$bmpPath"" /f & reg add ""HKCU\\Control Panel\\Desktop"" /v WallpaperStyle /t REG_SZ /d 10 /f & reg add ""HKCU\\Control Panel\\Desktop"" /v TileWallpaper /t REG_SZ /d 0 /f & RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True"
+        Set-ItemProperty -Path $asKey -Name "(Default)" -Value "KioskOverseer Wallpaper" -Force
+        Set-ItemProperty -Path $asKey -Name "StubPath" -Value $stubCmd -Force
+        Set-ItemProperty -Path $asKey -Name "Version" -Value "1,0,0,0" -Force
+        Set-ItemProperty -Path $asKey -Name "IsInstalled" -Value 1 -Type DWord -Force
 
-        # Apply wallpaper to all existing user profiles via HKU
-        $loadedSIDs = Get-ChildItem "Registry::HKU" | Where-Object { $_.Name -match 'S-1-5-21-.*[^_]$' } | Select-Object -ExpandProperty Name
-        foreach ($sid in $loadedSIDs) {
-            $userDesktop = "Registry::$sid\\Control Panel\\Desktop"
-            if (Test-Path $userDesktop) {
-                Set-ItemProperty -Path $userDesktop -Name "WallPaper" -Value $bmpPath -Force
-                Set-ItemProperty -Path $userDesktop -Name "WallpaperStyle" -Value "10" -Force
-                Set-ItemProperty -Path $userDesktop -Name "TileWallpaper" -Value "0" -Force
-            }
-        }
-
-        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Solid color ${hex} (${r} ${g} ${b}) via $bmpPath"
+        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Solid color ${hex} (${r} ${g} ${b}) via Active Setup"
     } catch {
         Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
     }
@@ -1316,39 +1301,24 @@ function downloadPowerShell() {
     } else if (state.mode !== 'single' && wallpaperType === 'image') {
         const imagePath = dom.get('wallpaperImagePath').value.replace(/\\/g, '\\\\').replace(/'/g, "''");
         wallpaperPs = `
-    # Configure desktop wallpaper - Image
+    # Configure desktop wallpaper - Image (Active Setup)
     Write-Log -Action "Set desktop wallpaper" -Status "Info" -Message "Image: ${imagePath}"
     try {
         $imgPath = '${imagePath}'
         if (-not (Test-Path $imgPath)) {
-            Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message "Image not found: $imgPath"
+            Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message "Image not found: $imgPath (must exist on target device)"
         }
 
-        # Apply wallpaper to Default User hive (applies to new profiles including kioskUser0)
-        $defaultHive = "C:\\Users\\Default\\NTUSER.DAT"
-        if (Test-Path $defaultHive) {
-            reg load "HKU\\DefaultUser" $defaultHive 2>$null
-            $defaultDesktop = "Registry::HKU\\DefaultUser\\Control Panel\\Desktop"
-            Set-ItemProperty -Path $defaultDesktop -Name "WallPaper" -Value $imgPath -Force
-            Set-ItemProperty -Path $defaultDesktop -Name "WallpaperStyle" -Value "10" -Force
-            Set-ItemProperty -Path $defaultDesktop -Name "TileWallpaper" -Value "0" -Force
-            [gc]::Collect()
-            reg unload "HKU\\DefaultUser" 2>$null
-            Write-Log -Action "Default User wallpaper" -Status "Success" -Message "Applied to Default User hive"
-        }
+        # Register Active Setup to apply wallpaper at each user's first logon
+        $asKey = "HKLM:\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components\\KioskOverseer-Wallpaper"
+        if (-not (Test-Path $asKey)) { New-Item -Path $asKey -Force | Out-Null }
+        $stubCmd = "reg add ""HKCU\\Control Panel\\Desktop"" /v WallPaper /t REG_SZ /d ""$imgPath"" /f & reg add ""HKCU\\Control Panel\\Desktop"" /v WallpaperStyle /t REG_SZ /d 10 /f & reg add ""HKCU\\Control Panel\\Desktop"" /v TileWallpaper /t REG_SZ /d 0 /f & RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True"
+        Set-ItemProperty -Path $asKey -Name "(Default)" -Value "KioskOverseer Wallpaper" -Force
+        Set-ItemProperty -Path $asKey -Name "StubPath" -Value $stubCmd -Force
+        Set-ItemProperty -Path $asKey -Name "Version" -Value "1,0,0,0" -Force
+        Set-ItemProperty -Path $asKey -Name "IsInstalled" -Value 1 -Type DWord -Force
 
-        # Apply wallpaper to all existing user profiles via HKU
-        $loadedSIDs = Get-ChildItem "Registry::HKU" | Where-Object { $_.Name -match 'S-1-5-21-.*[^_]$' } | Select-Object -ExpandProperty Name
-        foreach ($sid in $loadedSIDs) {
-            $userDesktop = "Registry::$sid\\Control Panel\\Desktop"
-            if (Test-Path $userDesktop) {
-                Set-ItemProperty -Path $userDesktop -Name "WallPaper" -Value $imgPath -Force
-                Set-ItemProperty -Path $userDesktop -Name "WallpaperStyle" -Value "10" -Force
-                Set-ItemProperty -Path $userDesktop -Name "TileWallpaper" -Value "0" -Force
-            }
-        }
-
-        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Image: $imgPath"
+        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Image: $imgPath via Active Setup"
     } catch {
         Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
     }
