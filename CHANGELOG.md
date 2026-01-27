@@ -2,6 +2,16 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.3.3] - 2026-01-27
+
+### Fixed
+- Dark theme text contrast improved (`#3FAF72` → `#57C484`) to meet WCAG 2.1 AA 4.5:1 ratio
+- Added `role="switch"` to all toggle switch inputs for correct screen reader semantics
+- Tab buttons now expose `aria-disabled` state for assistive technology
+- Collapsible section headers now toggle `aria-expanded` for screen readers
+- Pin action button `aria-label` attributes now use `escapeAttr()` to prevent XSS from user input
+- XML legend color swatches now use distinct border patterns (solid/dashed/dotted/double) for color-blind accessibility
+
 ## [1.3.2] - 2026-01-27
 
 ### Added

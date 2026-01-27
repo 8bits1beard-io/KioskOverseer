@@ -76,7 +76,8 @@ python -m http.server
 - 4-space indentation
 - Use the existing CSS variable system in `styles.css`
 - Prefer theme variables over hard-coded colors
-- Maintain accessibility (ARIA labels, keyboard navigation)
+- Maintain WCAG 2.1 Level AA accessibility (ARIA roles/states, keyboard navigation, 4.5:1 contrast ratios)
+- Use `escapeAttr()` from `helpers.js` when inserting user-provided text into HTML attributes
 
 ### Naming Conventions
 
@@ -101,6 +102,7 @@ There is currently no automated test framework. Testing is done manually:
 6. **Test both themes** (Fallout and Fluent)
 7. **Test wallpaper settings** (solid color, image path — visible in multi-app/restricted modes only)
 8. **Test browser watchdog** (enable toggle, interval field, scheduled task in PowerShell export)
+9. **Test accessibility** (screen reader output, keyboard navigation, contrast ratios in both themes)
 
 If you add automated tests, please document the test runner and execution instructions.
 

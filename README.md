@@ -60,6 +60,7 @@ Configuring Windows kiosk mode traditionally requires hand-crafting complex XML 
 - Two UI themes (Fallout and Fluent)
 - Desktop wallpaper configuration (solid color or image path) for multi-app/restricted modes
 - Browser Watchdog: optional scheduled task to relaunch browser if closed by idle timeout policy
+- WCAG 2.1 Level AA accessibility: proper ARIA roles/states, contrast ratios, color-blind safe indicators
 
 ---
 

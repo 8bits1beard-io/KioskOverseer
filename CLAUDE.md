@@ -63,7 +63,7 @@ Scripts load in this order in `index.html`. **Order matters** - later scripts ov
 | `config.js` | Configuration persistence + `actionHandlers` event delegation |
 | `xml.js` | AssignedAccess XML generation with namespace handling (rs5, v3, v4, v5) |
 | `validation.js` | Input validation rules, returns error objects with field and message |
-| `helpers.js` | Utilities: clipboard, file download, XML escaping, browser detection |
+| `helpers.js` | Utilities: clipboard, file download, XML escaping (`escapeXml`, `escapeAttr`), browser detection |
 | `state.js` | Central `state` object and async preset loading from JSON files |
 | `dom.js` | DOM element caching via `dom.get(id)` to avoid repeated queries |
 
@@ -201,6 +201,7 @@ Manual testing only (no automated test framework):
 6. Test both themes (Fallout and Fluent)
 7. Test wallpaper configuration (solid color and image path in multi-app/restricted modes)
 8. Test browser watchdog (enable toggle, interval field, PowerShell export with scheduled task)
+9. Test accessibility (screen reader announcements, keyboard navigation, contrast in both themes)
 
 ## Edge Kiosk Notes
 
