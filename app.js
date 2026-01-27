@@ -2244,7 +2244,8 @@ function generateReadme() {
 
     // Kiosk Mode
     readme += `## Kiosk Mode\n\n`;
-    readme += `**Type:** ${state.mode === 'single' ? 'Single-App' : 'Multi-App'}\n\n`;
+    const modeLabels = { single: 'Single-App', multi: 'Multi-App', restricted: 'Restricted User' };
+    readme += `**Type:** ${modeLabels[state.mode] || state.mode}\n\n`;
 
     // Account
     readme += `## Account\n\n`;
@@ -2252,10 +2253,16 @@ function generateReadme() {
         const displayName = dom.get('displayName').value || 'Kiosk User';
         readme += `**Type:** Auto Logon (Managed)\n`;
         readme += `**Display Name:** ${displayName}\n\n`;
-    } else {
+    } else if (state.accountType === 'existing') {
         const accountName = dom.get('accountName').value || '(not set)';
         readme += `**Type:** Existing Account\n`;
         readme += `**Account:** ${accountName}\n\n`;
+    } else if (state.accountType === 'group') {
+        const groupName = dom.get('groupName').value || '(not set)';
+        readme += `**Type:** User Group\n`;
+        readme += `**Group:** ${groupName}\n\n`;
+    } else if (state.accountType === 'global') {
+        readme += `**Type:** Global Profile (All Non-Admin Users)\n\n`;
     }
 
     if (state.mode === 'single') {
@@ -2271,7 +2278,8 @@ function generateReadme() {
             const kioskType = dom.get('edgeKioskType').value;
 
             readme += `**App:** Microsoft Edge (Kiosk Mode)\n`;
-            readme += `**URL:** ${url || '(not set)'}\n`;
+            readme += `**Source:** ${sourceType === 'url' ? 'URL' : 'Local File'}\n`;
+            readme += `**${sourceType === 'url' ? 'URL' : 'File Path'}:** ${url || '(not set)'}\n`;
             readme += `**Kiosk Type:** ${kioskType === 'fullscreen' ? 'Fullscreen (Digital Signage)' : 'Public Browsing'}\n`;
             readme += `**InPrivate Mode:** Always enabled (automatic in kiosk mode)\n\n`;
         } else if (appType === 'uwp') {
@@ -2292,48 +2300,68 @@ function generateReadme() {
         if (breakoutEnabled) {
             const breakoutPreview = dom.get('breakoutPreview').textContent;
             readme += `## Breakout Sequence\n\n`;
-            readme += `**Enabled:** Yes\n`;
             readme += `**Key Combination:** ${breakoutPreview}\n\n`;
         }
     } else {
-        // Multi-App details
-        readme += `## Whitelisted Applications\n\n`;
+        // Multi-App / Restricted details
+        readme += `## Allowed Applications\n\n`;
         if (state.allowedApps.length === 0) {
             readme += `(No applications added)\n\n`;
         } else {
             state.allowedApps.forEach((app, i) => {
                 const isAutoLaunch = state.autoLaunchApp === i;
-                readme += `${i + 1}. ${app.value}${isAutoLaunch ? ' **(Auto-Launch)**' : ''}\n`;
+                const typeLabel = app.type === 'aumid' ? 'UWP' : 'Win32';
+                readme += `${i + 1}. \`${app.value}\` (${typeLabel})${isAutoLaunch ? ' — **Auto-Launch**' : ''}\n`;
             });
             readme += `\n`;
         }
 
-        // Auto-launch Edge config
+        // Auto-launch browser config
         if (state.autoLaunchApp !== null) {
             const autoApp = state.allowedApps[state.autoLaunchApp];
-            if (autoApp && autoApp.value.toLowerCase().includes('msedge')) {
-                readme += `## Edge Auto-Launch Settings\n\n`;
-                const sourceType = dom.get('multiEdgeSourceType').value;
-                const url = sourceType === 'url'
-                    ? dom.get('multiEdgeUrl').value
-                    : dom.get('multiEdgeFilePath').value;
-                const kioskType = dom.get('multiEdgeKioskType').value;
-
-                readme += `**URL:** ${url || '(not set)'}\n`;
-                readme += `**Kiosk Type:** ${kioskType === 'fullscreen' ? 'Fullscreen' : 'Public Browsing'}\n`;
-                readme += `**InPrivate Mode:** Always enabled (automatic in kiosk mode)\n\n`;
+            if (autoApp && isBrowserWithKioskSupport(autoApp.value)) {
+                if (isEdgeApp(autoApp.value)) {
+                    readme += `### Browser Auto-Launch Settings\n\n`;
+                    readme += `**Browser:** Microsoft Edge\n`;
+                    const sourceType = dom.get('multiEdgeSourceType').value;
+                    const url = sourceType === 'url'
+                        ? dom.get('multiEdgeUrl').value
+                        : dom.get('multiEdgeFilePath').value;
+                    const kioskType = dom.get('multiEdgeKioskType').value;
+                    readme += `**Source:** ${sourceType === 'url' ? 'URL' : 'Local File'}\n`;
+                    readme += `**${sourceType === 'url' ? 'URL' : 'File Path'}:** ${url || '(not set)'}\n`;
+                    readme += `**Kiosk Type:** ${kioskType === 'fullscreen' ? 'Fullscreen' : 'Public Browsing'}\n\n`;
+                } else {
+                    const segments = autoApp.value.replace(/\//g, '\\').split('\\');
+                    const exeName = segments[segments.length - 1];
+                    const launchArgs = dom.get('win32AutoLaunchArgs').value.trim();
+                    readme += `### Browser Auto-Launch Settings\n\n`;
+                    readme += `**Browser:** ${exeName}\n`;
+                    if (launchArgs) readme += `**Arguments:** ${launchArgs}\n`;
+                    readme += `\n`;
+                }
             }
         }
 
         // Start menu pins
-        readme += `## Start Menu Pins\n\n`;
-        if (state.startPins.length === 0) {
-            readme += `(No pins configured)\n\n`;
-        } else {
+        if (state.startPins.length > 0) {
+            readme += `## Start Menu Pins\n\n`;
             state.startPins.forEach((pin, i) => {
                 readme += `${i + 1}. **${pin.name || '(unnamed)'}**\n`;
-                readme += `   - Target: ${pin.target || '(not set)'}\n`;
-                if (pin.args) readme += `   - Arguments: ${pin.args}\n`;
+                readme += `   - Target: \`${pin.target || '(not set)'}\`\n`;
+                if (pin.args) readme += `   - Arguments: \`${pin.args}\`\n`;
+                if (pin.systemShortcut) readme += `   - Uses system shortcut\n`;
+            });
+            readme += `\n`;
+        }
+
+        // Taskbar pins
+        if (state.taskbarPins.length > 0) {
+            readme += `## Taskbar Pins\n\n`;
+            state.taskbarPins.forEach((pin, i) => {
+                readme += `${i + 1}. **${pin.name || '(unnamed)'}**\n`;
+                readme += `   - Target: \`${pin.target || '(not set)'}\`\n`;
+                if (pin.args) readme += `   - Arguments: \`${pin.args}\`\n`;
                 if (pin.systemShortcut) readme += `   - Uses system shortcut\n`;
             });
             readme += `\n`;
@@ -2344,19 +2372,50 @@ function generateReadme() {
         const showTaskbar = dom.get('showTaskbar').checked;
         const fileExplorer = dom.get('fileExplorerAccess').value;
 
-        readme += `**Taskbar:** ${showTaskbar ? 'Visible' : 'Hidden'}\n`;
-        readme += `**File Explorer Access:** `;
-        switch (fileExplorer) {
-            case 'none': readme += `Disabled\n`; break;
-            case 'downloads': readme += `Downloads folder only\n`; break;
-            case 'removable': readme += `Removable drives only\n`; break;
-            case 'downloads-removable': readme += `Downloads + Removable drives\n`; break;
-            case 'all': readme += `No restriction\n`; break;
-            default: readme += `${fileExplorer}\n`;
+        readme += `| Setting | Value |\n`;
+        readme += `|---------|-------|\n`;
+        readme += `| Taskbar | ${showTaskbar ? 'Visible' : 'Hidden'} |\n`;
+        const fileExplorerLabels = {
+            'none': 'Disabled',
+            'downloads': 'Downloads folder only',
+            'removable': 'Removable drives only',
+            'downloads-removable': 'Downloads + Removable drives',
+            'all': 'No restriction'
+        };
+        readme += `| File Explorer | ${fileExplorerLabels[fileExplorer] || fileExplorer} |\n\n`;
+
+        // Desktop wallpaper
+        const wallpaperType = dom.get('wallpaperType').value;
+        if (wallpaperType !== 'none') {
+            readme += `## Desktop Wallpaper\n\n`;
+            if (wallpaperType === 'solid') {
+                const color = dom.get('wallpaperColor').value;
+                readme += `**Type:** Solid Color\n`;
+                readme += `**Color:** ${color}\n\n`;
+            } else if (wallpaperType === 'image') {
+                const imagePath = dom.get('wallpaperImagePath').value;
+                readme += `**Type:** Image File\n`;
+                readme += `**Path:** \`${imagePath || '(not set)'}\`\n\n`;
+            }
         }
-        readme += `\n`;
+
+        // Browser watchdog
+        const watchdogEnabled = dom.get('enableWatchdog').checked;
+        if (watchdogEnabled) {
+            const interval = dom.get('watchdogInterval').value;
+            const browserInfo = getWatchdogBrowserInfo();
+            readme += `## Browser Watchdog\n\n`;
+            readme += `**Poll Interval:** ${interval} seconds\n`;
+            if (browserInfo) {
+                readme += `**Monitored Process:** ${browserInfo.processName}\n`;
+            } else {
+                readme += `**Monitored Process:** (requires browser auto-launch app)\n`;
+            }
+            readme += `**Task Name:** \`KioskOverseer-BrowserWatchdog\`\n\n`;
+        }
     }
 
+    // Warnings
     if (edgeWarningPins.length > 0) {
         readme += `## Warnings\n\n`;
         readme += `Some Edge-backed shortcuts may not display custom name/icon in Assigned Access. ` +
@@ -2370,14 +2429,15 @@ function generateReadme() {
 
     // Profile ID
     readme += `## Profile\n\n`;
-    readme += `**Profile GUID:** ${profileId}\n\n`;
+    readme += `**Profile GUID:** \`${profileId}\`\n\n`;
 
     // Deployment note
     readme += `---\n\n`;
     readme += `## Deployment\n\n`;
-    readme += `Run the PowerShell script as SYSTEM:\n`;
-    readme += `\`\`\`\npsexec.exe -i -s powershell.exe -ExecutionPolicy Bypass -File "AssignedAccess-<Config>.ps1"\n\`\`\`\n\n`;
-    readme += `A reboot is required after applying the configuration.\n`;
+    readme += `Deploy the PowerShell script via Intune or run locally as SYSTEM:\n`;
+    readme += `\`\`\`powershell\npsexec.exe -i -s powershell.exe -ExecutionPolicy Bypass -File "AssignedAccess-<Config>.ps1"\n\`\`\`\n\n`;
+    readme += `A reboot is required after applying the configuration.\n\n`;
+    readme += `> Generated by [Kiosk Overseer](https://kioskoverseer.com)\n`;
 
     return readme;
 }

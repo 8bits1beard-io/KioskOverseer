@@ -2,6 +2,28 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.3.4] - 2026-01-27
+
+### Fixed
+- Configuration Summary now correctly identifies Restricted User mode (was always showing "Multi-App")
+- Account section now documents User Group and Global Profile account types
+- Auto-launch browser detection now covers Chrome, Firefox, Brave, and Island (was Edge-only)
+
+### Added
+- Taskbar Pins section in Configuration Summary
+- Desktop Wallpaper section in Configuration Summary (solid color or image path)
+- Browser Watchdog section in Configuration Summary (process name, poll interval, task name)
+- App type labels (Win32/UWP) in allowed applications list
+- Edge source type (URL vs Local File) shown in browser settings
+- Code-formatted paths and GUIDs for readability
+- Generator attribution footer
+
+### Changed
+- "Whitelisted Applications" renamed to "Allowed Applications"
+- System Restrictions now rendered as a table for clarity
+- Start Menu Pins and Taskbar Pins sections only appear when pins are configured
+- Breakout Sequence section simplified (removed redundant "Enabled: Yes")
+
 ## [1.3.3] - 2026-01-27
 
 ### Fixed
