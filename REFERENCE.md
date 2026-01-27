@@ -40,8 +40,10 @@ Technical reference for Kiosk Overseer.
    - Use Edge Secondary Tile for pinned websites
 5. Configure taskbar pins (optional): add apps to appear on the taskbar
 6. Configure **Taskbar** and **File Explorer** settings in Setup
-7. Configure account (Auto-logon or Existing Account)
-8. Export
+7. Optionally configure **Desktop Wallpaper** (solid color or image path on target device)
+8. Optionally enable **Browser Watchdog** to relaunch the auto-launch browser if closed by idle timeout
+9. Configure account (Auto-logon or Existing Account)
+10. Export
 
 ### Restricted User Experience
 
@@ -99,6 +101,8 @@ The Settings Catalog multi-app kiosk allow-list is AUMID-based and does not supp
    - Pre-flight checks (Windows edition, SYSTEM context via SID S-1-5-18, WMI availability)
    - Enables process creation auditing, command-line capture, and sets Security log size to 512MB (best effort)
    - Creates shortcuts in `%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\` for Start and Taskbar pins
+   - Configures desktop wallpaper if set (solid color via registry or image path)
+   - Creates Browser Watchdog scheduled task if enabled (monitors and relaunches browser)
    - Applies configuration via WMI (`MDM_AssignedAccess`)
    - Generates NDJSON log file with timestamps and execution details in `%ProgramData%\\KioskOverseer\\Logs`
 4. Reboot

@@ -58,6 +58,8 @@ Configuring Windows kiosk mode traditionally requires hand-crafting complex XML 
 - Configuration import/export (`.kioskoverseer.json`)
 - Breakout sequence configuration for technician access
 - Two UI themes (Fallout and Fluent)
+- Desktop wallpaper configuration (solid color or image path) for multi-app/restricted modes
+- Browser Watchdog: optional scheduled task to relaunch browser if closed by idle timeout policy
 
 ---
 

@@ -99,6 +99,8 @@ There is currently no automated test framework. Testing is done manually:
 4. **Test exports** (XML download, PowerShell scripts, config save/load)
 5. **Test validation** (trigger errors, verify messages)
 6. **Test both themes** (Fallout and Fluent)
+7. **Test wallpaper settings** (solid color, image path — visible in multi-app/restricted modes only)
+8. **Test browser watchdog** (enable toggle, interval field, scheduled task in PowerShell export)
 
 If you add automated tests, please document the test runner and execution instructions.
 

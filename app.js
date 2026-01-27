@@ -230,6 +230,42 @@ function updateTaskbarControlsVisibility() {
     });
 }
 
+function updateWallpaperVisibility() {
+    const section = dom.get('wallpaperSection');
+    if (!section) return;
+    const hide = state.mode === 'single';
+    section.classList.toggle('hidden', hide);
+    section.setAttribute('aria-hidden', hide.toString());
+    section.querySelectorAll('input, select, textarea, button').forEach(control => {
+        control.disabled = hide;
+    });
+}
+
+function updateWallpaperTypeUI() {
+    const type = dom.get('wallpaperType').value;
+    const colorGroup = dom.get('wallpaperColorGroup');
+    const imageGroup = dom.get('wallpaperImageGroup');
+    if (colorGroup) colorGroup.classList.toggle('hidden', type !== 'solid');
+    if (imageGroup) imageGroup.classList.toggle('hidden', type !== 'image');
+}
+
+function updateWatchdogVisibility() {
+    const section = dom.get('watchdogSection');
+    if (!section) return;
+    const hide = state.mode === 'single';
+    section.classList.toggle('hidden', hide);
+    section.setAttribute('aria-hidden', hide.toString());
+    section.querySelectorAll('input, select, textarea, button').forEach(control => {
+        control.disabled = hide;
+    });
+}
+
+function updateWatchdogUI() {
+    const enabled = dom.get('enableWatchdog').checked;
+    const options = dom.get('watchdogOptions');
+    if (options) options.classList.toggle('hidden', !enabled);
+}
+
 function getStoredTheme() {
     return localStorage.getItem(THEME_STORAGE_KEY) || 'fallout';
 }
@@ -289,6 +325,8 @@ function setMode(mode) {
     // Update tab visibility based on mode
     updateTabVisibility();
     updateTaskbarControlsVisibility();
+    updateWallpaperVisibility();
+    updateWatchdogVisibility();
 
     updateKioskModeHint();
 
@@ -838,6 +876,29 @@ function getMultiAppEdgeUrl() {
     );
 }
 
+function getWatchdogBrowserInfo() {
+    if (state.autoLaunchApp === null) return null;
+    const app = state.allowedApps[state.autoLaunchApp];
+    if (!app || app.type !== 'path') return null;
+    if (!isBrowserWithKioskSupport(app.value)) return null;
+
+    const exePath = app.value;
+    const segments = exePath.replace(/\//g, '\\').split('\\');
+    const exeName = segments[segments.length - 1];
+    const processName = exeName.replace(/\.exe$/i, '');
+
+    let launchArgs = '';
+    if (isEdgeApp(app.value)) {
+        const url = getMultiAppEdgeUrl();
+        const kioskType = dom.get('multiEdgeKioskType').value;
+        launchArgs = buildEdgeKioskArgs(url, kioskType, 0);
+    } else {
+        launchArgs = dom.get('win32AutoLaunchArgs').value.trim();
+    }
+
+    return { exePath, processName, launchArgs };
+}
+
 function updateMultiEdgeSourceUI() {
     const sourceType = dom.get('multiEdgeSourceType').value;
     const urlGroup = dom.get('multiEdgeUrlGroup');
@@ -1209,6 +1270,137 @@ function downloadPowerShell() {
             IconLocation: p.iconPath || ''
         })), null, 4);
 
+    // Generate wallpaper PowerShell block
+    const wallpaperType = dom.get('wallpaperType').value;
+    let wallpaperPs = '';
+    if (state.mode !== 'single' && wallpaperType === 'solid') {
+        const hex = dom.get('wallpaperColor').value;
+        const r = parseInt(hex.substring(1, 3), 16);
+        const g = parseInt(hex.substring(3, 5), 16);
+        const b = parseInt(hex.substring(5, 7), 16);
+        wallpaperPs = `
+    # Configure desktop wallpaper - Solid Color
+    Write-Log -Action "Set desktop wallpaper" -Status "Info" -Message "Solid color: ${hex}"
+    try {
+        $regPath = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization"
+        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+        Set-ItemProperty -Path $regPath -Name "DesktopImagePath" -Value "" -Force
+        Set-ItemProperty -Path $regPath -Name "DesktopImageStatus" -Value 0 -Force -Type DWord
+
+        $desktopPath = "HKCU:\\Control Panel\\Desktop"
+        Set-ItemProperty -Path $desktopPath -Name "WallPaper" -Value "" -Force
+
+        $colorsPath = "HKCU:\\Control Panel\\Colors"
+        Set-ItemProperty -Path $colorsPath -Name "Background" -Value "${r} ${g} ${b}" -Force
+
+        RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True
+        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Solid color ${hex} (${r} ${g} ${b})"
+    } catch {
+        Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
+    }
+`;
+    } else if (state.mode !== 'single' && wallpaperType === 'image') {
+        const imagePath = dom.get('wallpaperImagePath').value.replace(/\\/g, '\\\\').replace(/'/g, "''");
+        wallpaperPs = `
+    # Configure desktop wallpaper - Image
+    Write-Log -Action "Set desktop wallpaper" -Status "Info" -Message "Image: ${imagePath}"
+    try {
+        $imgPath = '${imagePath}'
+        if (-not (Test-Path $imgPath)) {
+            Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message "Image not found: $imgPath"
+        }
+
+        $regPath = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization"
+        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+        Set-ItemProperty -Path $regPath -Name "DesktopImagePath" -Value $imgPath -Force
+        Set-ItemProperty -Path $regPath -Name "DesktopImageStatus" -Value 1 -Force -Type DWord
+
+        $desktopPath = "HKCU:\\Control Panel\\Desktop"
+        Set-ItemProperty -Path $desktopPath -Name "WallPaper" -Value $imgPath -Force
+        Set-ItemProperty -Path $desktopPath -Name "WallpaperStyle" -Value "10" -Force
+        Set-ItemProperty -Path $desktopPath -Name "TileWallpaper" -Value "0" -Force
+
+        RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True
+        Write-Log -Action "Desktop wallpaper set" -Status "Success" -Message "Image: $imgPath"
+    } catch {
+        Write-Log -Action "Desktop wallpaper" -Status "Warning" -Message $_.Exception.Message
+    }
+`;
+    }
+
+    // Generate Browser Watchdog scheduled task block
+    let watchdogPs = '';
+    if (state.mode !== 'single' && dom.get('enableWatchdog').checked) {
+        const browserInfo = getWatchdogBrowserInfo();
+        if (browserInfo) {
+            const interval = Math.max(5, parseInt(dom.get('watchdogInterval').value) || 10);
+            const escapedPath = browserInfo.exePath.replace(/'/g, "''");
+            const escapedArgs = browserInfo.launchArgs.replace(/'/g, "''");
+            const pName = browserInfo.processName;
+
+            watchdogPs = `
+    # Browser Watchdog - Create scheduled task to relaunch browser if closed
+    if (-not $ShortcutsOnly) {
+        Write-Log -Action "Browser Watchdog" -Status "Info" -Message "Creating scheduled task for ${pName}"
+        try {
+            $watchdogTaskName = "KioskOverseer-BrowserWatchdog"
+
+            # Remove existing watchdog task if present
+            $existing = Get-ScheduledTask -TaskName $watchdogTaskName -ErrorAction SilentlyContinue
+            if ($existing) {
+                Unregister-ScheduledTask -TaskName $watchdogTaskName -Confirm:$false
+                Write-Log -Action "Removed existing watchdog task" -Status "Info"
+            }
+
+            $watchdogScript = @'
+# KioskOverseer Browser Watchdog
+$processName = '${pName}'
+$exePath = [Environment]::ExpandEnvironmentVariables('${escapedPath}')
+$launchArgs = '${escapedArgs}'
+$cooldownSeconds = 10
+$lastLaunch = [datetime]::MinValue
+
+while ($true) {
+    Start-Sleep -Seconds ${interval}
+    $running = Get-Process -Name $processName -ErrorAction SilentlyContinue
+    if (-not $running) {
+        $now = Get-Date
+        if (($now - $lastLaunch).TotalSeconds -ge $cooldownSeconds) {
+            try {
+                if ($launchArgs) {
+                    Start-Process -FilePath $exePath -ArgumentList $launchArgs
+                } else {
+                    Start-Process -FilePath $exePath
+                }
+                $lastLaunch = $now
+            } catch { }
+        }
+    }
+}
+'@
+
+            $watchdogPath = Join-Path $env:ProgramData "KioskOverseer\\BrowserWatchdog.ps1"
+            $watchdogDir = Split-Path $watchdogPath
+            if (-not (Test-Path $watchdogDir)) {
+                New-Item -ItemType Directory -Path $watchdogDir -Force | Out-Null
+            }
+            Set-Content -Path $watchdogPath -Value $watchdogScript -Encoding UTF8
+
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \`"$watchdogPath\`""
+            $trigger = New-ScheduledTaskTrigger -AtLogOn
+            $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+
+            Register-ScheduledTask -TaskName $watchdogTaskName -Action $action -Trigger $trigger -Settings $settings -Description "KioskOverseer Browser Watchdog - Relaunches browser if closed" -Force | Out-Null
+
+            Write-Log -Action "Browser Watchdog created" -Status "Success" -Message "Task: $watchdogTaskName, Process: ${pName}, Interval: ${interval}s"
+        } catch {
+            Write-Log -Action "Browser Watchdog" -Status "Warning" -Message $_.Exception.Message
+        }
+    }
+`;
+        }
+    }
+
     const ps1 = `#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
@@ -1435,7 +1627,8 @@ catch {
 
 try {
     Write-Log -Action "Starting deployment" -Status "Info" -Message "Target: $env:COMPUTERNAME"
-
+${wallpaperPs}
+${watchdogPs}
     # Skip audit logging setup in ShortcutsOnly mode
     if (-not $ShortcutsOnly) {
         # Enable audit logging for process creation and command-line capture

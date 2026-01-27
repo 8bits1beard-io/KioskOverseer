@@ -2,6 +2,16 @@
 
 All notable changes to Kiosk Overseer are documented here.
 
+## [1.3.2] - 2026-01-27
+
+### Added
+- Desktop wallpaper configuration for multi-app and restricted kiosk modes (solid color or image path)
+- Browser Watchdog feature: optional scheduled task that monitors and relaunches the auto-launch browser if closed (e.g., by Intune idle timeout policy)
+- Color picker input styling for wallpaper configuration
+
+### Changed
+- PowerShell deployment script now includes wallpaper registry configuration and browser watchdog scheduled task creation when enabled
+
 ## [1.2.8] - 2026-01-23
 
 ### Removed

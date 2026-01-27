@@ -195,6 +195,10 @@ function applyConfigSnapshot(payload) {
     updateEdgeArgsVisibility('taskbarPin', 'taskbarPinTarget', 'taskbarPinEdgeArgsGroup');
     updateEdgeArgsVisibility('editTaskbar', 'editTaskbarPinTarget', 'editTaskbarEdgeArgsGroup');
     updateBreakoutUI();
+    updateWallpaperVisibility();
+    updateWallpaperTypeUI();
+    updateWatchdogVisibility();
+    updateWatchdogUI();
     updatePreview();
 }
 
@@ -220,6 +224,17 @@ function loadPreset(preset) {
     dom.get('multiEdgeKioskType').value = 'fullscreen';
     dom.get('win32AutoLaunchArgs').value = '';
     updateMultiEdgeSourceUI();
+
+    // Reset wallpaper config
+    dom.get('wallpaperType').value = 'none';
+    dom.get('wallpaperColor').value = '#000000';
+    dom.get('wallpaperImagePath').value = '';
+    updateWallpaperTypeUI();
+
+    // Reset watchdog config
+    dom.get('enableWatchdog').checked = false;
+    dom.get('watchdogInterval').value = '10';
+    updateWatchdogUI();
 
     switch (preset) {
         case 'blank':
@@ -360,7 +375,9 @@ const actionHandlers = {
     handleConfigImport,
     copyProfileId,
     dismissCallout,
-    toggleTheme
+    toggleTheme,
+    updateWallpaperTypeUI,
+    updateWatchdogUI
 };
 
 // Debounce guard for download actions to prevent double-triggering
