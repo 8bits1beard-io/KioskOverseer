@@ -253,21 +253,10 @@ function updateWallpaperTypeUI() {
     if (imageGroup) imageGroup.classList.toggle('hidden', type !== 'image');
 }
 
-function updateWatchdogVisibility() {
-    const section = dom.get('watchdogSection');
-    if (!section) return;
-    const hide = state.mode === 'single';
-    section.classList.toggle('hidden', hide);
-    section.setAttribute('aria-hidden', hide.toString());
-    section.querySelectorAll('input, select, textarea, button').forEach(control => {
-        control.disabled = hide;
-    });
-}
-
 function updateWatchdogUI() {
     const enabled = dom.get('enableWatchdog').checked;
-    const options = dom.get('watchdogOptions');
-    if (options) options.classList.toggle('hidden', !enabled);
+    const intervalGroup = dom.get('watchdogIntervalGroup');
+    if (intervalGroup) intervalGroup.classList.toggle('hidden', !enabled);
 }
 
 function getStoredTheme() {
@@ -330,7 +319,6 @@ function setMode(mode) {
     updateTabVisibility();
     updateTaskbarControlsVisibility();
     updateWallpaperVisibility();
-    updateWatchdogVisibility();
 
     updateKioskModeHint();
 
@@ -880,16 +868,16 @@ function getMultiAppEdgeUrl() {
     );
 }
 
-function getWatchdogBrowserInfo() {
+function getWatchdogAppInfo() {
     if (state.autoLaunchApp === null) return null;
     const app = state.allowedApps[state.autoLaunchApp];
     if (!app || app.type !== 'path') return null;
-    if (!isBrowserWithKioskSupport(app.value)) return null;
 
     const exePath = app.value;
     const segments = exePath.replace(/\//g, '\\').split('\\');
     const exeName = segments[segments.length - 1];
     const processName = exeName.replace(/\.exe$/i, '');
+    const isBrowser = isBrowserWithKioskSupport(app.value);
 
     let launchArgs = '';
     if (isEdgeApp(app.value)) {
@@ -900,7 +888,7 @@ function getWatchdogBrowserInfo() {
         launchArgs = dom.get('win32AutoLaunchArgs').value.trim();
     }
 
-    return { exePath, processName, launchArgs };
+    return { exePath, processName, launchArgs, isBrowser };
 }
 
 function updateMultiEdgeSourceUI() {
@@ -1341,22 +1329,25 @@ function downloadPowerShell() {
 `;
     }
 
-    // Generate Browser Watchdog scheduled task block
+    // Generate App Watchdog scheduled task block
     let watchdogPs = '';
     if (state.mode !== 'single' && dom.get('enableWatchdog').checked) {
-        const browserInfo = getWatchdogBrowserInfo();
-        if (browserInfo) {
+        const appInfo = getWatchdogAppInfo();
+        if (appInfo) {
             const interval = Math.max(5, parseInt(dom.get('watchdogInterval').value) || 10);
-            const escapedPath = browserInfo.exePath.replace(/'/g, "''");
-            const escapedArgs = browserInfo.launchArgs.replace(/'/g, "''");
-            const pName = browserInfo.processName;
+            const escapedPath = appInfo.exePath.replace(/'/g, "''");
+            const escapedArgs = appInfo.launchArgs.replace(/'/g, "''");
+            const pName = appInfo.processName;
+            const processCheck = appInfo.isBrowser
+                ? `$running = Get-Process -Name $processName -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }`
+                : `$running = Get-Process -Name $processName -ErrorAction SilentlyContinue`;
 
             watchdogPs = `
-    # Browser Watchdog - Create scheduled task to relaunch browser if closed
+    # App Watchdog - Create scheduled task to relaunch app if closed
     if (-not $ShortcutsOnly) {
-        Write-Log -Action "Browser Watchdog" -Status "Info" -Message "Creating scheduled task for ${pName}"
+        Write-Log -Action "App Watchdog" -Status "Info" -Message "Creating scheduled task for ${pName}"
         try {
-            $watchdogTaskName = "KioskOverseer-BrowserWatchdog"
+            $watchdogTaskName = "KioskOverseer-AppWatchdog"
 
             # Remove existing watchdog task if present
             $existing = Get-ScheduledTask -TaskName $watchdogTaskName -ErrorAction SilentlyContinue
@@ -1366,7 +1357,7 @@ function downloadPowerShell() {
             }
 
             $watchdogScript = @'
-# KioskOverseer Browser Watchdog
+# KioskOverseer App Watchdog
 $processName = '${pName}'
 $exePath = [Environment]::ExpandEnvironmentVariables('${escapedPath}')
 $launchArgs = '${escapedArgs}'
@@ -1375,7 +1366,7 @@ $lastLaunch = [datetime]::MinValue
 
 while ($true) {
     Start-Sleep -Seconds ${interval}
-    $running = Get-Process -Name $processName -ErrorAction SilentlyContinue
+    ${processCheck}
     if (-not $running) {
         $now = Get-Date
         if (($now - $lastLaunch).TotalSeconds -ge $cooldownSeconds) {
@@ -1388,9 +1379,9 @@ while ($true) {
                 $lastLaunch = $now
             } catch {
                 $errMsg = $_.Exception.Message
-                $errLog = Join-Path $env:ProgramData "KioskOverseer\\Logs\\BrowserWatchdog.log"
+                $errLog = Join-Path $env:ProgramData "KioskOverseer\\Logs\\AppWatchdog.log"
                 $now = Get-Date
-                $line = '<![LOG[Failed to relaunch: {0}]LOG]!><time="{1}" date="{2}" component="BrowserWatchdog" context="" type="3" thread="{3}" file="">' -f $errMsg, $now.ToString("HH:mm:ss.fffzz00"), $now.ToString("MM-dd-yyyy"), [System.Threading.Thread]::CurrentThread.ManagedThreadId
+                $line = '<![LOG[Failed to relaunch: {0}]LOG]!><time="{1}" date="{2}" component="AppWatchdog" context="" type="3" thread="{3}" file="">' -f $errMsg, $now.ToString("HH:mm:ss.fffzz00"), $now.ToString("MM-dd-yyyy"), [System.Threading.Thread]::CurrentThread.ManagedThreadId
                 $line | Out-File -Append -FilePath $errLog -Encoding UTF8
             }
         }
@@ -1398,7 +1389,7 @@ while ($true) {
 }
 '@
 
-            $watchdogPath = Join-Path $env:ProgramData "KioskOverseer\\BrowserWatchdog.ps1"
+            $watchdogPath = Join-Path $env:ProgramData "KioskOverseer\\AppWatchdog.ps1"
             $watchdogDir = Split-Path $watchdogPath
             if (-not (Test-Path $watchdogDir)) {
                 New-Item -ItemType Directory -Path $watchdogDir -Force | Out-Null
@@ -1410,11 +1401,11 @@ while ($true) {
             $principal = New-ScheduledTaskPrincipal -GroupId "BUILTIN\\Users" -RunLevel Limited
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 
-            Register-ScheduledTask -TaskName $watchdogTaskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "KioskOverseer Browser Watchdog - Relaunches browser if closed" -Force | Out-Null
+            Register-ScheduledTask -TaskName $watchdogTaskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "KioskOverseer App Watchdog - Relaunches app if closed" -Force | Out-Null
 
-            Write-Log -Action "Browser Watchdog created" -Status "Success" -Message "Task: $watchdogTaskName, Process: ${pName}, Interval: ${interval}s"
+            Write-Log -Action "App Watchdog created" -Status "Success" -Message "Task: $watchdogTaskName, Process: ${pName}, Interval: ${interval}s"
         } catch {
-            Write-Log -Action "Browser Watchdog" -Status "Warning" -Message $_.Exception.Message
+            Write-Log -Action "App Watchdog" -Status "Warning" -Message $_.Exception.Message
         }
     }
 `;
@@ -2375,19 +2366,19 @@ function generateReadme() {
             }
         }
 
-        // Browser watchdog
+        // App watchdog
         const watchdogEnabled = dom.get('enableWatchdog').checked;
         if (watchdogEnabled) {
             const interval = dom.get('watchdogInterval').value;
-            const browserInfo = getWatchdogBrowserInfo();
-            readme += `## Browser Watchdog\n\n`;
+            const appInfo = getWatchdogAppInfo();
+            readme += `## App Watchdog\n\n`;
             readme += `**Poll Interval:** ${interval} seconds\n`;
-            if (browserInfo) {
-                readme += `**Monitored Process:** ${browserInfo.processName}\n`;
+            if (appInfo) {
+                readme += `**Monitored Process:** ${appInfo.processName}\n`;
             } else {
-                readme += `**Monitored Process:** (requires browser auto-launch app)\n`;
+                readme += `**Monitored Process:** (requires auto-launch app with executable path)\n`;
             }
-            readme += `**Task Name:** \`KioskOverseer-BrowserWatchdog\`\n\n`;
+            readme += `**Task Name:** \`KioskOverseer-AppWatchdog\`\n\n`;
         }
     }
 

@@ -197,7 +197,6 @@ function applyConfigSnapshot(payload) {
     updateBreakoutUI();
     updateWallpaperVisibility();
     updateWallpaperTypeUI();
-    updateWatchdogVisibility();
     updateWatchdogUI();
     updatePreview();
 }

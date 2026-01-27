@@ -208,9 +208,11 @@ function updateAutoLaunchSelection() {
 function updateMultiAppEdgeUI() {
     const edgeConfig = dom.get('multiAppEdgeConfig');
     const win32ArgsConfig = dom.get('win32ArgsConfig');
+    const watchdogOptions = dom.get('watchdogOptions');
 
     let showEdgeConfig = false;
     let showWin32Args = false;
+    let showWatchdog = false;
 
     if (state.autoLaunchApp !== null && state.allowedApps[state.autoLaunchApp]) {
         const app = state.allowedApps[state.autoLaunchApp];
@@ -219,6 +221,9 @@ function updateMultiAppEdgeUI() {
         } else if (app.type === 'path') {
             showWin32Args = true;
         }
+        if (app.type === 'path') {
+            showWatchdog = true;
+        }
     }
 
     edgeConfig.classList.toggle('hidden', !showEdgeConfig);
@@ -226,4 +231,13 @@ function updateMultiAppEdgeUI() {
 
     win32ArgsConfig.classList.toggle('hidden', !showWin32Args);
     win32ArgsConfig.setAttribute('aria-hidden', !showWin32Args);
+
+    if (watchdogOptions) {
+        watchdogOptions.classList.toggle('hidden', !showWatchdog);
+        if (!showWatchdog) {
+            const checkbox = dom.get('enableWatchdog');
+            if (checkbox) checkbox.checked = false;
+            updateWatchdogUI();
+        }
+    }
 }
